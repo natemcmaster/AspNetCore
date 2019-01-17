@@ -5,12 +5,12 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>aspnetcore;identity;membership</PackageTags>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.Extensions.Logging" />
     <Reference Include="Microsoft.Extensions.Identity.Core" />
-    <Reference Include="System.ComponentModel.Annotations" />
   </ItemGroup>
 
 </Project>

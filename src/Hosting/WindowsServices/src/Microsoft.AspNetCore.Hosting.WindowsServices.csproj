@@ -9,9 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Hosting" />
-  </ItemGroup>
-  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="System.ServiceProcess.ServiceController" />
   </ItemGroup>
 

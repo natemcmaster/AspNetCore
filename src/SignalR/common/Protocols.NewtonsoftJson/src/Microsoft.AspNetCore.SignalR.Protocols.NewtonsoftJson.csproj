@@ -6,6 +6,7 @@
     <RootNamespace>Microsoft.AspNetCore.SignalR</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsProductPackage>true</IsProductPackage>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>

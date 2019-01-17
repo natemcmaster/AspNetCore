@@ -10,10 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Identity" />
-    <Reference Include="Microsoft.Extensions.Configuration" />
-    <Reference Include="Microsoft.Extensions.DependencyInjection" />
-    <Reference Include="Microsoft.Extensions.Logging" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="xunit.assert" />
     <Reference Include="xunit.extensibility.core" />
     <Reference Include="xunit.analyzers" PrivateAssets="All" />

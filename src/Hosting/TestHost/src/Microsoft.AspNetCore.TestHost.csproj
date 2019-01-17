@@ -10,9 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Hosting" />
-    <Reference Include="Microsoft.Extensions.HostFactoryResolver.Sources" PrivateAssets="All" />
-    <Reference Include="System.IO.Pipelines" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <Reference Include="Microsoft.Extensions.HostFactoryResolver.Sources" SharedSources="true" />
   </ItemGroup>
 
 </Project>

@@ -12,6 +12,7 @@ Microsoft.AspNetCore.Http.HttpResponse</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>aspnetcore</PackageTags>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +21,7 @@ Microsoft.AspNetCore.Http.HttpResponse</Description>
 
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Http.Features" />
-    <Reference Include="Microsoft.Extensions.ActivatorUtilities.Sources" PrivateAssets="All" />
+    <Reference Include="Microsoft.Extensions.ActivatorUtilities.Sources" SharedSources="true" />
     <Reference Include="System.Text.Encodings.Web" />
   </ItemGroup>
 

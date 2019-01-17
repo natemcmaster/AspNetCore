@@ -7,6 +7,7 @@
     <PackageTags>aspnetcore;kestrel</PackageTags>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>CS1591;$(NoWarn)</NoWarn>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,11 +23,8 @@
     <Reference Include="Microsoft.Extensions.Logging.Abstractions" />
     <Reference Include="Microsoft.Extensions.Options" />
     <Reference Include="Microsoft.Net.Http.Headers" />
-    <Reference Include="System.Memory" />
-    <Reference Include="System.Numerics.Vectors" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe" />
     <Reference Include="System.Security.Cryptography.Cng" />
-    <Reference Include="System.Threading.Tasks.Extensions" />
   </ItemGroup>
 
   <ItemGroup>

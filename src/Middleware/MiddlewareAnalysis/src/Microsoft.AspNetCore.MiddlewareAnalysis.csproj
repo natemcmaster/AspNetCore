@@ -10,8 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Hosting.Abstractions" />
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="System.Diagnostics.DiagnosticSource" />
   </ItemGroup>
 

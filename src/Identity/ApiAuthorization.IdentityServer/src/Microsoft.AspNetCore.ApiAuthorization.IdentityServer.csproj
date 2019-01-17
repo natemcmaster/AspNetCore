@@ -9,13 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="IdentityServer4.AspNetIdentity" />
     <Reference Include="IdentityServer4.EntityFramework" />
     <Reference Include="IdentityServer4" />
     <Reference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <Reference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <Reference Include="Microsoft.AspNetCore.Identity.UI" />
-    <Reference Include="Microsoft.AspNetCore.Mvc" />
   </ItemGroup>
 
 </Project>

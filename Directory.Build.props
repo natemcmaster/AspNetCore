@@ -53,6 +53,11 @@
     <SignAssembly>true</SignAssembly>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <TargetOsName Condition=" '$(TargetOsName)' == '' AND $([MSBuild]::IsOSPlatform('Windows'))">win</TargetOsName>
+    <TargetOsName Condition=" '$(TargetOsName)' == '' AND $([MSBuild]::IsOSPlatform('OSX'))">osx</TargetOsName>
+    <TargetOsName Condition=" '$(TargetOsName)' == '' AND $([MSBuild]::IsOSPlatform('Linux'))">linux</TargetOsName>
+    <TargetArchitecture Condition="'$(TargetArchitecture)' == ''">x64</TargetArchitecture>
+    <TargetRuntimeIdentifier>$(TargetOsName)-$(TargetArchitecture)</TargetRuntimeIdentifier>
 
     <!-- Instructs the compiler to use SHA256 instead of SHA1 when adding file hashes to PDBs. -->
     <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
@@ -87,6 +92,12 @@
     <InstallersOutputPath>$(ArtifactsConfigurationDir)installers\</InstallersOutputPath>
   </PropertyGroup>
 
+  <!-- The location of the local installation of the .NET Core shared framework. -->
+  <PropertyGroup>
+    <LocalDotNetRoot Condition="'$(OS)' == 'Windows_NT'">$(RepositoryRoot).dotnet\$(TargetArchitecture)\</LocalDotNetRoot>
+    <LocalDotNetRoot Condition="'$(OS)' != 'Windows_NT'">$(RepositoryRoot).dotnet\</LocalDotNetRoot>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(OutputInRepoRoot)' == 'true' ">
     <BaseOutputPath>$(RepositoryRoot)bin\$(Configuration)\$(MSBuildProjectName)\</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)</OutputPath>
@@ -117,6 +128,7 @@
   <Import Project="eng\Dependencies.props" />
   <Import Project="eng\PatchConfig.props" />
   <Import Project="eng\ProjectReferences.props" />
+  <Import Project="src\Framework\Microsoft.AspNetCore.App.props" />
   <Import Project="eng\targets\RuntimeIdentifiers.props" />
   <Import Project="eng\targets\Cpp.Common.props"  Condition="'$(MSBuildProjectExtension)' == '.vcxproj'" />
   <Import Project="eng\targets\CSharp.Common.props"  Condition="'$(MSBuildProjectExtension)' == '.csproj'" />

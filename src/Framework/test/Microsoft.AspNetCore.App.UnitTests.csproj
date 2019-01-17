@@ -6,7 +6,9 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <Import Project="..\Microsoft.AspNetCore.App.props" />
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="Microsoft.AspNetCore.TestData">
@@ -31,12 +33,12 @@
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonPackageVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- <ItemGroup>
     <ProjectReference Include="..\src\Microsoft.AspNetCore.App.shfxproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>_ResolvedFrameworkReference</OutputItemType>
     </ProjectReference>
-  </ItemGroup>
+  </ItemGroup> -->
 
   <Target Name="GenerateTestData" BeforeTargets="GetAssemblyAttributes" DependsOnTargets="ResolveProjectReferences">
     <ItemGroup>

@@ -7,12 +7,13 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>aspnetcore</PackageTags>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Http" />
     <Reference Include="Microsoft.AspNetCore.Http.Extensions" />
     <Reference Include="Microsoft.Extensions.Options" />
-    <Reference Include="Microsoft.AspNetCore.Hosting.Abstractions" /> 
+    <Reference Include="Microsoft.AspNetCore.Hosting.Abstractions" />
   </ItemGroup>
 </Project>

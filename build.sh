@@ -18,6 +18,8 @@ repo_path="$DIR"
 lockfile_path="$DIR/korebuild-lock.txt"
 config_file="$DIR/korebuild.json"
 channel='master'
+target_arch='x64'
+target_os_name=''
 tools_source='https://aspnetcore.blob.core.windows.net/buildtools'
 ci=false
 run_restore=true
@@ -30,6 +32,12 @@ build_nodejs=false
 build_projects=''
 msbuild_args=()
 
+if [ "$(uname)" = "Darwin" ]; then
+    target_os_name='osx'
+else
+    target_os_name='linux'
+fi
+
 #
 # Functions
 #
@@ -40,6 +48,9 @@ Arguments:
     <Arguments>...     Arguments passed to the command. Variable number of arguments allowed.
 
 Options:
+    --arch             The CPU architecture to build for (x64, arm, arm64). Default=$target_arch
+    --os-name          The base runtime identifier to build for (linux, osx, linux-musl). Default=$target_os_name
+
     --[no-]restore     Run restore.
     --[no-]build       Compile projects
     --[no-]pack        Produce packages.
@@ -157,6 +168,14 @@ while [[ $# -gt 0 ]]; do
             repo_path="${1:-}"
             [ -z "$repo_path" ] && __error "Missing value for parameter --repo-root" && __usage
             ;;
+        --arch)
+            target_arch="${1:-}"
+            [ -z "$target_arch" ] && __error "Missing value for parameter --arch" && __usage
+            ;;
+        --os-name)
+            target_os_name="${1:-}"
+            [ -z "$target_os_name" ] && __error "Missing value for parameter --os-name" && __usage
+            ;;
         --restore|-[Rr]estore)
             run_restore=true
             ;;
@@ -200,9 +219,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --ci|-[Cc][Ii])
             ci=true
-            if [[ -z "${DOTNET_HOME:-}" ]]; then
-                DOTNET_HOME="$DIR/.dotnet"
-            fi
             ;;
         --verbose|-[Vv]erbose)
             verbose=true
@@ -250,7 +266,7 @@ if [ -f "$config_file" ]; then
     [ ! -z "${config_tools_source:-}" ] && tools_source="$config_tools_source"
 fi
 
-[ -z "${DOTNET_HOME:-}" ] && DOTNET_HOME="$HOME/.dotnet"
+[ -z "${DOTNET_HOME:-}" ] && DOTNET_HOME="$DIR/.dotnet"
 export DOTNET_HOME="$DOTNET_HOME"
 
 get_korebuild
@@ -276,6 +292,9 @@ msbuild_args[${#msbuild_args[*]}]="-p:_RunRestore=$run_restore"
 msbuild_args[${#msbuild_args[*]}]="-p:_RunBuild=$run_build"
 msbuild_args[${#msbuild_args[*]}]="-p:_RunPack=$run_pack"
 msbuild_args[${#msbuild_args[*]}]="-p:_RunTests=$run_tests"
+
+msbuild_args[${#msbuild_args[*]}]="-p:TargetArchitecture=$target_arch"
+msbuild_args[${#msbuild_args[*]}]="-p:TargetOsName=$target_os_name"
 
 set_korebuildsettings "$tools_source" "$DOTNET_HOME" "$repo_path" "$config_file" "$ci"
 

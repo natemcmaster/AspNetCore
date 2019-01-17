@@ -6,6 +6,7 @@
     <Description>Microsoft.AspNetCore</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <EnableApiCheck>false</EnableApiCheck>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>

@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Authentication" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
   </ItemGroup>
 

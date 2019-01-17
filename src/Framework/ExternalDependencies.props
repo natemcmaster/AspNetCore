@@ -1,0 +1,76 @@
+<!--
+  This lists all assemblies which are part of the Microsoft.AspNetCore.App shared framework
+  but which are not built by this project.
+-->
+<Project>
+
+  <ItemGroup>
+    <ExternalAspNetCoreAppReference Include="Microsoft.DotNet.PlatformAbstractions" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Caching.Abstractions" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Caching.Memory" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Configuration.CommandLine" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Configuration.Ini" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Configuration.Json" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Configuration.KeyPerFile" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Configuration.Xml" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Configuration" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.DependencyInjection" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.DependencyModel" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.FileProviders.Abstractions" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.FileProviders.Composite" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.FileProviders.Embedded" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.FileProviders.Physical" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.FileSystemGlobbing" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Hosting" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Http" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Localization.Abstractions" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Localization" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Logging.Configuration" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Logging.Console" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Logging.Debug" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Logging.EventSource" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Logging.TraceSource" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Logging" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.ObjectPool" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Options.DataAnnotations" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Options" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.Primitives" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.Extensions.WebEncoders" />
+    <ExternalAspNetCoreAppReference Include="Microsoft.JSInterop" />
+    <ExternalAspNetCoreAppReference Include="Newtonsoft.Json" />
+    <ExternalAspNetCoreAppReference Include="System.IO.Pipelines" />
+    <ExternalAspNetCoreAppReference Include="System.Runtime.CompilerServices.Unsafe" />
+    <ExternalAspNetCoreAppReference Include="System.Security.Cryptography.Pkcs" />
+    <ExternalAspNetCoreAppReference Include="System.Security.Cryptography.Xml" />
+    <ExternalAspNetCoreAppReference Include="System.Security.Permissions" />
+    <ExternalAspNetCoreAppReference Include="System.Text.Encodings.Web" />
+    <ExternalAspNetCoreAppReference Include="System.Threading.Channels" />
+  </ItemGroup>
+
+  <!--
+    These compilation references are necessary to compile ns2.0 assemblies in the shared framework, but the runtime assemblies are part of netcoreapp3.0.
+    The preferred solution to reference problems with shared framework assemblies is to reference netcoreapp3.0 and not use System.* references,
+    but in some edge cases, this is not reasonable.
+  -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+    <_FrameworkProvidedReference Include="Microsoft.Win32.Registry" />
+    <_FrameworkProvidedReference Include="System.Security.Cryptography.Cng" />
+    <_FrameworkProvidedReference Include="System.Security.Principal.Windows" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <_FrameworkProvidedReference Include="System.Buffers" />
+    <_FrameworkProvidedReference Include="System.Buffers" />
+  </ItemGroup>
+
+</Project>

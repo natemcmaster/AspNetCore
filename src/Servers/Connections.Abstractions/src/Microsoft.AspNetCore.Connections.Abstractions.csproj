@@ -7,11 +7,12 @@
     <PackageTags>aspnetcore</PackageTags>
     <NoWarn>CS1591;$(NoWarn)</NoWarn>
     <IsProductPackage>true</IsProductPackage>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Http.Features" />
-    <Reference Include="Microsoft.Extensions.ActivatorUtilities.Sources" PrivateAssets="All" />
+    <Reference Include="Microsoft.Extensions.ActivatorUtilities.Sources" SharedSources="true" />
     <Reference Include="System.IO.Pipelines" />
   </ItemGroup>
 

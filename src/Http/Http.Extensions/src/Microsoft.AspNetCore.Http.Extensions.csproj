@@ -6,13 +6,13 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>aspnetcore</PackageTags>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Http.Abstractions" />
     <Reference Include="Microsoft.Net.Http.Headers" />
     <Reference Include="Microsoft.Extensions.FileProviders.Abstractions" />
-    <Reference Include="System.Buffers" />
   </ItemGroup>
 
 </Project>

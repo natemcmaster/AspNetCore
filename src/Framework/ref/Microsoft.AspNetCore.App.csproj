@@ -1,0 +1,26 @@
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <IncludeMainProjectInDepsFile>false</IncludeMainProjectInDepsFile>
+    <OutputType>exe</OutputType>
+    <UseAppHost>false</UseAppHost>
+    <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="@(AspNetCoreAppReference)" />
+    <Reference Include="@(AspNetCoreAppReferenceAndPackage)" />
+    <Reference Include="@(ExternalAspNetCoreAppReference)" />
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <Target Name="_GetSharedFxProjectReferences" Returns="@(ProjectReference)" />
+  <Target Name="GetTargetPath" />
+  <Target Name="CoreBuild" DependsOnTargets="ResolveProjectReferences" />
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
+</Project>

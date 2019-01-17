@@ -8,6 +8,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>aspnetcore;iis</PackageTags>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,10 +23,7 @@
     <Reference Include="Microsoft.AspNetCore.HttpOverrides" />
     <Reference Include="Microsoft.Extensions.Logging.Abstractions" />
     <Reference Include="Microsoft.Extensions.Options" />
-    <Reference Include="System.Buffers" />
     <Reference Include="System.IO.Pipelines" />
-    <Reference Include="System.Memory" />
-    <Reference Include="System.Numerics.Vectors" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe" />
     <Reference Include="System.Security.Principal.Windows" />
   </ItemGroup>

@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.DataProtection" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="StackExchange.Redis" />
   </ItemGroup>
 

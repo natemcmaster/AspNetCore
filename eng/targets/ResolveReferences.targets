@@ -15,15 +15,27 @@
     * LatestPackageReference = a list of the latest versions of packages
     * Reference = a list of the references which are needed for compilation or runtime
     * ProjectReferenceProvider = a list which maps of assembly names to the project file that produces it
+    * FrameworkReference = a reference to a shared framework
  -->
 <Project>
 
   <PropertyGroup>
     <ResolveReferencesDependsOn>
       ResolveCustomReferences;
+      ResolveCustomFrameworkReferences;
       $(ResolveReferencesDependsOn);
     </ResolveReferencesDependsOn>
+
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+
+    <SharedFrameworkProjectPath>$(RepositoryRoot)src\Framework\ref\Microsoft.AspNetCore.App.csproj</SharedFrameworkProjectPath>
   </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <Reference>
+      <SharedSources>false</SharedSources>
+    </Reference>
+  </ItemDefinitionGroup>
 
   <PropertyGroup>
     <!--
@@ -59,6 +71,17 @@
 
     <_UnusedProjectReferenceProvider Include="@(ProjectReferenceProvider)" Exclude="@(Reference)" />
 
+    <_InvalidReferenceToNonSharedFxAssembly Condition="'$(IsAspNetCoreApp)' == 'true'"
+      Include="@(Reference)"
+      Exclude="@(AspNetCoreAppReference);@(AspNetCoreAppReferenceAndPackage);@(ExternalAspNetCoreAppReference);@(_FrameworkProvidedReference);@(Reference->WithMetadataValue('NuGetPackageId','NETStandard.Library'))" />
+
+    <_NotAspNetCoreApp Condition="'$(IsAspNetCoreApp)' != 'true'"
+      Include="@(Reference)"
+      Exclude="@(AspNetCoreAppReference)" />
+    <_InvalidReferenceToSharedFxOnlyAssembly Condition="'$(IsAspNetCoreApp)' != 'true'"
+      Include="@(Reference)"
+      Exclude="@(_NotAspNetCoreApp);@(AspNetCoreAppReferenceAndPackage);@(ExternalAspNetCoreAppReference)" />
+
     <!--
       Turn Reference items into a ProjectReference when UseProjectReferences is true.
       Order matters. This comes before package resolution because projects should be used when possible instead of packages.
@@ -77,13 +100,110 @@
   </ItemGroup>
 
   <!--
-    This target resolves remaining Referene items to Packages, if possible. If not, they are left as Reference items fo the SDK to resolve.
+    This target helps ensure projects within the shared framework do no unintentionally add new references,
+    and that assemblies outside the shared framework reference the framework as a whole instead of using
+    individual assemblies.
+  -->
+  <Target Name="_CheckForReferenceBoundaries" BeforeTargets="CollectPackageReferences;ResolveReferences">
+
+    <!-- TODO: convert all test and samples to use FrameworkReference too and remove IsImplementationProject from this condition -->
+    <Error Condition="'$(IsImplementationProject)' == 'true' AND @(_InvalidReferenceToSharedFxOnlyAssembly->Count()) != 0"
+           Text="Cannot reference &quot;%(_InvalidReferenceToSharedFxOnlyAssembly.Identity)&quot; directly because it is part of the shared framework and this project is not. Use &lt;FrameworkReference Include=&quot;Microsoft.AspNetCore.App&quot; /&gt; instead." />
+
+    <Error Condition="@(_InvalidReferenceToNonSharedFxAssembly->Count()) != 0 AND '%(_InvalidReferenceToNonSharedFxAssembly.SharedSources)' != 'true'"
+           Text="Cannot reference &quot;%(_InvalidReferenceToNonSharedFxAssembly.Identity)&quot;. This assembly is not in the shared framework." />
+  </Target>
+
+  <!-- This target determines if a project has a reference to Microsoft.AspNetCore.App. -->
+  <Target Name="_CheckIfAspNetAppIsReferenced"
+          BeforeTargets="_CheckForInvalidConfigurationAndPlatform;_DefaultMicrosoftNETPlatformLibrary">
+    <PropertyGroup>
+      <_ReferencesAspNetCoreApp>@(FrameworkReference->AnyHaveMetadataValue('Identity', 'Microsoft.AspNetCore.App'))</_ReferencesAspNetCoreApp>
+      <MicrosoftNETPlatformLibrary Condition="'$(_ReferencesAspNetCoreApp)' == 'true'">Microsoft.AspNetCore.App</MicrosoftNETPlatformLibrary>
+    </PropertyGroup>
+  </Target>
+
+  <!--
+    This target resolves FrameworkReference to the locally built version of the shared framework.
+    This is overrides the default SDK resolution of FrameworkReference to AspNetCore.App.
+  -->
+  <Target Name="ResolveCustomFrameworkReferences"
+          Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'"
+          DependsOnTargets="_CheckIfAspNetAppIsReferenced"
+          BeforeTargets="ResolveFrameworkReferences;CollectPackageReferences;_GenerateRestoreProjectPathItemsPerFramework">
+
+    <ItemGroup Condition="'$(_ReferencesAspNetCoreApp)' == 'true'">
+      <RuntimeFramework Include="Microsoft.AspNetCore.App" Version="$(SharedFxVersion)" />
+      <FrameworkReference Remove="Microsoft.AspNetCore.App" />
+      <ProjectReference Include="$(SharedFrameworkProjectPath)">
+        <PrivateAssets>All</PrivateAssets>
+      </ProjectReference>
+      <GenerateRuntimeConfigurationFilesInputs Include="$(MSBuildAllProjects)" />
+    </ItemGroup>
+  </Target>
+
+  <!--
+    This target collects a list of the project references which are used to create the shared framework.
+    The items it returns are used to knockout assemblies from the local bin directory and .deps.json files.
+  -->
+  <Target Name="ResolveSharedFrameworkProjectReferences"
+          DependsOnTargets="_CheckIfAspNetAppIsReferenced">
+    <MSBuild Projects="$(SharedFrameworkProjectPath)"
+             Targets="_GetSharedFxProjectReferences"
+             Condition="'$(_ReferencesAspNetCoreApp)' == 'true'">
+      <Output TaskParameter="TargetOutputs" ItemName="_SharedFrameworkProjectRef" />
+    </MSBuild>
+  </Target>
+
+  <!--
+    This target updates the transitive ProjectReference item normally resolved
+
+  -->
+  <Target Name="UpdateTransitiveSharedFrameworkReferences"
+          BeforeTargets="AssignProjectConfiguration"
+          DependsOnTargets="_CheckIfAspNetAppIsReferenced;IncludeTransitiveProjectReferences;ResolveSharedFrameworkProjectReferences"
+          Condition="'$(_ReferencesAspNetCoreApp)' == 'true'">
+
+    <!-- Normalize ProjectReferences to absolute path.
+      This is required so we can match up project references
+      which came from the shared framework based on item identity.
+    -->
+    <ItemGroup>
+      <_Temp Remove="@(Temp)" />
+      <_Temp Include="@(ProjectReference)" />
+      <ProjectReference Remove="@(ProjectReference)" />
+    </ItemGroup>
+
+    <ConvertToAbsolutePath Paths="@(_Temp)">
+      <Output TaskParameter="AbsolutePaths" ItemName="ProjectReference"/>
+    </ConvertToAbsolutePath>
+
+    <!-- Update metadata on the project references to assemblies in the shared framework. -->
+    <ItemGroup>
+      <ProjectReference Remove="@(_SharedFrameworkProjectRef)" />
+      <ProjectReference Include="@(_SharedFrameworkProjectRef)">
+        <!-- This instructs MSBuild not to copy into project's bin folders. -->
+        <Private>false</Private>
+        <!-- This is required to make .deps.json think that this isn't actually a project reference. -->
+        <ReferenceSourceTarget>ResolveAssemblyReference</ReferenceSourceTarget>
+      </ProjectReference>
+    </ItemGroup>
+  </Target>
+
+  <!--
+    This target resolves remaining Reference items to Packages, if possible. If not, they are left as Reference items fo the SDK to resolve.
     This executes on NuGet restore and during DesignTimeBuild. It should not run in the outer, cross-targeting build.
    -->
   <Target Name="ResolveCustomReferences" BeforeTargets="CollectPackageReferences;ResolveAssemblyReferencesDesignTime;ResolveAssemblyReferences" Condition=" '$(TargetFramework)' != '' ">
     <ItemGroup>
       <Reference Include="@(_ReferenceTemp)" />
       <_ReferenceTemp Remove="@(_ReferenceTemp)" />
+
+      <!-- Ensure only content asset are consumed from .Sources packages -->
+      <Reference>
+        <IncludeAssets Condition="'%(SharedSources)' == 'true'">ContentFiles</IncludeAssets>
+        <PrivateAssets Condition="'%(SharedSources)' == 'true'">All</PrivateAssets>
+      </Reference>
 
       <!-- Identify if any references were present in the last release of this package, but have been removed. -->
       <UnusedBaselinePackageReference Include="@(BaselinePackageReference)" Exclude="@(Reference);@(_ProjectReferenceByAssemblyName);@(PackageReference)" />
@@ -167,6 +287,8 @@
   <Target Name="_GetReferencesProvided" Returns="@(ProvidesReference)">
     <ItemGroup Condition=" '$(IsProjectReferenceProvider)' == 'true' ">
       <ProvidesReference Include="$(AssemblyName)">
+        <IsAspNetCoreApp>$([MSBuild]::ValueOrDefault($(IsAspNetCoreApp),'false'))</IsAspNetCoreApp>
+        <IsProductPackage>$([MSBuild]::ValueOrDefault($(IsProductPackage),'false'))</IsProductPackage>
         <ProjectFileRelativePath>$([MSBuild]::MakeRelative($(RepositoryRoot), $(MSBuildProjectFullPath)))</ProjectFileRelativePath>
       </ProvidesReference>
     </ItemGroup>

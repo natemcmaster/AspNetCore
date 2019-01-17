@@ -9,8 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Identity" />
-    <Reference Include="Microsoft.Extensions.Identity.Stores" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.EntityFrameworkCore.Relational" />
   </ItemGroup>
 

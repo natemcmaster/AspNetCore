@@ -11,6 +11,7 @@
     <PackNativeAssets Condition="'$(OS)' == 'Windows_NT'">true</PackNativeAssets>
     <NativeAssetsTargetFramework>netcoreapp3.0</NativeAssetsTargetFramework>
     <DisableFastUpToDateCheck>True</DisableFastUpToDateCheck>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>

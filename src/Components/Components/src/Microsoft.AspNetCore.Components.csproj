@@ -5,6 +5,7 @@
     <Description>Components feature for ASP.NET Core.</Description>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsProductPackage>true</IsProductPackage>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>

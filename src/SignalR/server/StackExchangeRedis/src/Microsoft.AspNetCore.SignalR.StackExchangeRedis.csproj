@@ -12,10 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.Extensions.Options" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="StackExchange.Redis" />
     <Reference Include="MessagePack" />
-    <Reference Include="Microsoft.AspNetCore.SignalR.Core" />
   </ItemGroup>
 
 </Project>

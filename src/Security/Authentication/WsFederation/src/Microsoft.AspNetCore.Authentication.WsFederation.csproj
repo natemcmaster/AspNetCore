@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Authentication" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.IdentityModel.Protocols.WsFederation" />
     <Reference Include="System.IdentityModel.Tokens.Jwt" />
   </ItemGroup>

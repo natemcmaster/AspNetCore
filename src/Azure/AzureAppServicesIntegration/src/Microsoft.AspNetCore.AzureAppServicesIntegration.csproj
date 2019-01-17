@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Hosting" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.Extensions.Logging.AzureAppServices" />
   </ItemGroup>
 

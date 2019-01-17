@@ -6,12 +6,11 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>aspnetcore;aspnetcoremvc</PackageTags>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Mvc.Core" />
-
     <Reference Include="Microsoft.Extensions.Localization" />
-    <Reference Include="System.ComponentModel.Annotations" />
   </ItemGroup>
 </Project>

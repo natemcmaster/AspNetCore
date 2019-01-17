@@ -84,6 +84,9 @@ param(
     [switch]$Test, # Run tests
     [switch]$Sign, # Code sign
 
+    [ValidateSet('x64', 'x86', 'arm')]
+    $Architecture = 'x64',
+
     # Project selection
     [Parameter(ParameterSetName = 'All')]
     [switch]$All,  # Build everything
@@ -223,10 +226,7 @@ if (Test-Path $ConfigFile) {
 }
 
 $DotNetHome = if ($env:DOTNET_HOME) { $env:DOTNET_HOME } `
-    elseif ($CI) { Join-Path $PSScriptRoot '.dotnet' } `
-    elseif ($env:USERPROFILE) { Join-Path $env:USERPROFILE '.dotnet'} `
-    elseif ($env:HOME) {Join-Path $env:HOME '.dotnet'}`
-    else { Join-Path $PSScriptRoot '.dotnet'}
+              else { Join-Path $PSScriptRoot '.dotnet'}
 
 $env:DOTNET_HOME = $DotNetHome
 
@@ -269,6 +269,9 @@ $MSBuildArguments += "/p:_RunBuild=$Build"
 $MSBuildArguments += "/p:_RunPack=$Pack"
 $MSBuildArguments += "/p:_RunTests=$Test"
 $MSBuildArguments += "/p:_RunSign=$Sign"
+
+$MSBuildArguments += "/p:TargetArchitecture=$Architecture"
+$MSBuildArguments += "/p:TargetOsName=win"
 
 Import-Module -Force -Scope Local (Join-Path $korebuildPath 'KoreBuild.psd1')
 

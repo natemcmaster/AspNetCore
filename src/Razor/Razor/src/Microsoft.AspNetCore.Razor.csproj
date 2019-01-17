@@ -10,6 +10,7 @@ Microsoft.AspNetCore.Razor.TagHelpers.HtmlTargetElementAttribute
 Microsoft.AspNetCore.Razor.TagHelpers.ITagHelper</Description>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <PackageTags>$(PackageTags);taghelper;taghelpers</PackageTags>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
 
     <!-- Required to implement an HtmlEncoder -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -17,7 +18,7 @@ Microsoft.AspNetCore.Razor.TagHelpers.ITagHelper</Description>
 
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Html.Abstractions" />
-    <Reference Include="Microsoft.Extensions.HashCodeCombiner.Sources" PrivateAssets="All" />
+    <Reference Include="Microsoft.Extensions.HashCodeCombiner.Sources" SharedSources="true" />
   </ItemGroup>
 
 </Project>

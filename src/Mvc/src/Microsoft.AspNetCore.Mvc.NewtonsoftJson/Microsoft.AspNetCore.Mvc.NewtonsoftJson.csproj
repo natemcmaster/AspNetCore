@@ -13,8 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
-    <Reference Include="Microsoft.AspNetCore.JsonPatch" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Newtonsoft.Json" />
     <Reference Include="Newtonsoft.Json.Bson" />
   </ItemGroup>

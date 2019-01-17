@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.SignalR.Common" />
-    <Reference Include="Microsoft.AspNetCore.SignalR.Core" />
     <Reference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" />
     <Reference Include="xunit.assert" />
     <Reference Include="xunit.extensibility.core" />

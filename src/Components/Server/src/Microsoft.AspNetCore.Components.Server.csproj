@@ -13,12 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.Components.Browser" />
-    <Reference Include="Microsoft.AspNetCore.SignalR" />
     <Reference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" />
-    <Reference Include="Microsoft.AspNetCore.StaticFiles" />
     <Reference Include="Microsoft.AspNetCore.SpaServices.Extensions" />
-    <Reference Include="Microsoft.Extensions.FileProviders.Embedded" />
   </ItemGroup>
 
   <ItemGroup>
