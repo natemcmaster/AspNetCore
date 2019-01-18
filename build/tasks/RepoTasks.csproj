@@ -6,6 +6,8 @@
     <TargetFramework Condition="'$(MSBuildRuntimeType)' != 'Core' ">net461</TargetFramework>
     <DefineConstants Condition="'$(BuildWindowsInstallers)' == 'true'">$(DefineConstants);BUILD_MSI_TASKS</DefineConstants>
     <DefineConstants Condition="'$(PublishToAzureFeed)' == 'true'">$(DefineConstants);BUILD_AZ_TASKS</DefineConstants>
+    <Optimize>false</Optimize>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

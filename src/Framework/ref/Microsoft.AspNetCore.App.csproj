@@ -3,12 +3,40 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <IncludeMainProjectInDepsFile>false</IncludeMainProjectInDepsFile>
-    <OutputType>exe</OutputType>
-    <UseAppHost>false</UseAppHost>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
+    <SharedFxName>$(MSbuildProjectName)</SharedFxName>
+    <RuntimeIdentifier>$(TargetOsName)-$(TargetArchitecture)</RuntimeIdentifier>
+    <BaseSharedFrameworkName>Microsoft.NETCore.App</BaseSharedFrameworkName>
+    <CrossGenToolPackageId>runtime.$(RuntimeIdentifier).$(BaseSharedFrameworkName)</CrossGenToolPackageId>
+
+    <SharedFxOutputPath>$(LocalDotNetRoot)shared\$(SharedFxName)\$(SharedFxVersion)\</SharedFxOutputPath>
+    <VersionFileOutputPath>$(SharedFxOutputPath).version</VersionFileOutputPath>
+
+    <CrossGenToolPath>$(NuGetPackageRoot)$(CrossGenToolPackageId)\$(MicrosoftNETCoreAppPackageVersion)\tools\crossgen</CrossGenToolPath>
+    <CrossGenToolPath Condition="'$(TargetOsName)' == 'win'">$(CrossGenToolPath).exe</CrossGenToolPath>
+
+    <!-- Always generated, even though output type == Library -->
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <!-- Even though RuntimeIdentifier is set, shared framework projects are not self-contained projects -->
+    <SelfContained>false</SelfContained>
+    <!-- Re-use the SDK's publish targets to collect output into one place. -->
+    <PublishDir>$(SharedFxOutputPath)</PublishDir>
+    <!-- Prevents runtimeconfig.dev.json from ending up in publish output. -->
+    <ProjectRuntimeConfigDevFilePath>$(IntermediateOutputPath)$(SharedFxName).runtimeconfig.dev.json</ProjectRuntimeConfigDevFilePath>
+    <!-- The output path of generated files -->
+    <PublishRuntimeConfigFilePath>$(SharedFxOutputPath)$(SharedFxName).runtimeconfig.json</PublishRuntimeConfigFilePath>
+    <!-- Redirects the output of GeneratePublishDependencyFile into obj/ because we need to do post-processing on the .deps.json file -->
+    <DepsFilePath>$(SharedFxOutputPath)$(SharedFxName).deps.json</DepsFilePath>
+
+    <!-- The project representing the shared framework doesn't produce a .NET assembly or symbols -->
+    <DebugType>none</DebugType>
+
+    <!-- Don't add TFM to the project output path of shared framework projects -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <CopyBuildOutputToPublishDirectory>false</CopyBuildOutputToPublishDirectory>
     <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
     <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
-    <IsAspNetCoreApp>true</IsAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,10 +45,78 @@
     <Reference Include="@(ExternalAspNetCoreAppReference)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- This package is only used so we can acquire the crossgen tool. -->
+    <PackageReference Include="$(CrossGenToolPackageId)">
+      <Version>$(MicrosoftNETCoreAppPackageVersion)</Version>
+      <ExcludeAssets>All</ExcludeAssets>
+      <PrivateAssets>All</PrivateAssets>
+      <Publish>false</Publish>
+    </PackageReference>
+  </ItemGroup
+  >
+  <ItemGroup>
+    <CreateDirectory Include="$(PublishDir)" />
+  </ItemGroup>
+
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
+  <PropertyGroup>
+    <CoreBuildDependsOn>
+      PrepareForBuild;
+      ResolveCommitHash;
+      GenerateSharedFxVersionsFile;
+      ResolveReferences;
+      GeneratePublishRuntimeConfigurationFile;
+      GenerateSharedFrameworkDependencyFile;
+      ComputeFilesToPublish;
+      CopyFilesToPublishDirectory;
+      PrepareForRun;
+    </CoreBuildDependsOn>
+
+    <PrepareForRunDependsOn>
+      $(PrepareForRunDependsOn);
+      CrossGenOutput;
+    </PrepareForRunDependsOn>
+  </PropertyGroup>
+
   <Target Name="_GetSharedFxProjectReferences" Returns="@(ProjectReference)" />
+
+  <!-- Override the default MSBuild targets so that nothing is returned from the project since it represents a collection of assemblies. -->
   <Target Name="GetTargetPath" />
-  <Target Name="CoreBuild" DependsOnTargets="ResolveProjectReferences" />
-  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)">
+    <Message Importance="High" Text="$(MSBuildProjectName) -> $(SharedFxOutputPath)" />
+  </Target>
+
+  <!-- No need to copy to a bin directory. -->
+  <Target Name="CopyFilesToOutputDirectory" />
+
+  <!-- Generates the .version file in the shared framework -->
+  <Target Name="GenerateSharedFxVersionsFile">
+    <ItemGroup>
+      <VersionLines Include="$(RepositoryCommit)" />
+      <VersionLines Include="$(PackageVersion)" />
+    </ItemGroup>
+
+    <WriteLinesToFile
+      File="$(VersionFileOutputPath)"
+      Lines="@(VersionLines)"
+      Overwrite="true" />
+  </Target>
+
+  <Target Name="CrossGenOutput">
+  </Target>
+
+  <Target Name="GenerateSharedFrameworkDependencyFile"
+          Inputs="$(MSBuildAllProjects);@(ReferencePath)"
+          Outputs="$(DepsFilePath)">
+    <RepoTasks.GenerateSharedFrameworkDepsFile
+      DepsFilePath="$(DepsFilePath)"
+      TargetFramework="$(TargetFrameworkMoniker)"
+      FrameworkName="$(SharedFxName)"
+      FrameworkVersion="$(SharedFxVersion)"
+      ReferencePaths="@(ReferencePath)"
+      RuntimeIdentifier="$(RuntimeIdentifier)" />
+  </Target>
+
 </Project>
