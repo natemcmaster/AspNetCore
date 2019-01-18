@@ -4,7 +4,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <IsAspNetCoreApp>true</IsAspNetCoreApp>
-    <SharedFxName>$(MSbuildProjectName)</SharedFxName>
+    <SharedFxName>$(MSBuildProjectName)</SharedFxName>
     <RuntimeIdentifier>$(TargetOsName)-$(TargetArchitecture)</RuntimeIdentifier>
     <BaseSharedFrameworkName>Microsoft.NETCore.App</BaseSharedFrameworkName>
     <CrossGenToolPackageId>runtime.$(RuntimeIdentifier).$(BaseSharedFrameworkName)</CrossGenToolPackageId>
@@ -14,19 +14,6 @@
 
     <CrossGenToolPath>$(NuGetPackageRoot)$(CrossGenToolPackageId)\$(MicrosoftNETCoreAppPackageVersion)\tools\crossgen</CrossGenToolPath>
     <CrossGenToolPath Condition="'$(TargetOsName)' == 'win'">$(CrossGenToolPath).exe</CrossGenToolPath>
-
-    <!-- Always generated, even though output type == Library -->
-    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <!-- Even though RuntimeIdentifier is set, shared framework projects are not self-contained projects -->
-    <SelfContained>false</SelfContained>
-    <!-- Re-use the SDK's publish targets to collect output into one place. -->
-    <PublishDir>$(SharedFxOutputPath)</PublishDir>
-    <!-- Prevents runtimeconfig.dev.json from ending up in publish output. -->
-    <ProjectRuntimeConfigDevFilePath>$(IntermediateOutputPath)$(SharedFxName).runtimeconfig.dev.json</ProjectRuntimeConfigDevFilePath>
-    <!-- The output path of generated files -->
-    <PublishRuntimeConfigFilePath>$(SharedFxOutputPath)$(SharedFxName).runtimeconfig.json</PublishRuntimeConfigFilePath>
-    <!-- Redirects the output of GeneratePublishDependencyFile into obj/ because we need to do post-processing on the .deps.json file -->
-    <DepsFilePath>$(SharedFxOutputPath)$(SharedFxName).deps.json</DepsFilePath>
 
     <!-- The project representing the shared framework doesn't produce a .NET assembly or symbols -->
     <DebugType>none</DebugType>
@@ -60,6 +47,21 @@
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <!-- Always generated, even though output type == Library -->
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <!-- Even though RuntimeIdentifier is set, shared framework projects are not self-contained projects -->
+    <SelfContained>false</SelfContained>
+    <!-- Re-use the SDK's publish targets to collect output into one place. -->
+    <PublishDir>$(SharedFxOutputPath)</PublishDir>
+    <!-- Prevents runtimeconfig.dev.json from ending up in publish output. -->
+    <ProjectRuntimeConfigDevFilePath>$(IntermediateOutputPath)$(SharedFxName).runtimeconfig.dev.json</ProjectRuntimeConfigDevFilePath>
+    <!-- The output path of generated files -->
+    <PublishRuntimeConfigFilePath>$(SharedFxOutputPath)$(SharedFxName).runtimeconfig.json</PublishRuntimeConfigFilePath>
+    <!-- Redirects the output of GeneratePublishDependencyFile into obj/ because we need to do post-processing on the .deps.json file -->
+    <DepsFilePath>$(SharedFxOutputPath)$(SharedFxName).deps.json</DepsFilePath>
+  </PropertyGroup>
 
   <PropertyGroup>
     <CoreBuildDependsOn>

@@ -107,7 +107,7 @@
   <Target Name="_CheckForReferenceBoundaries" BeforeTargets="CollectPackageReferences;ResolveReferences">
 
     <!-- TODO: convert all test and samples to use FrameworkReference too and remove IsImplementationProject from this condition -->
-    <Error Condition="'$(IsImplementationProject)' == 'true' AND @(_InvalidReferenceToSharedFxOnlyAssembly->Count()) != 0"
+    <Error Condition="@(_InvalidReferenceToSharedFxOnlyAssembly->Count()) != 0"
            Text="Cannot reference &quot;%(_InvalidReferenceToSharedFxOnlyAssembly.Identity)&quot; directly because it is part of the shared framework and this project is not. Use &lt;FrameworkReference Include=&quot;Microsoft.AspNetCore.App&quot; /&gt; instead." />
 
     <Error Condition="@(_InvalidReferenceToNonSharedFxAssembly->Count()) != 0 AND '%(_InvalidReferenceToNonSharedFxAssembly.SharedSources)' != 'true'"
