@@ -288,7 +288,7 @@
     <ItemGroup Condition=" '$(IsProjectReferenceProvider)' == 'true' ">
       <ProvidesReference Include="$(AssemblyName)">
         <IsAspNetCoreApp>$([MSBuild]::ValueOrDefault($(IsAspNetCoreApp),'false'))</IsAspNetCoreApp>
-        <IsProductPackage>$([MSBuild]::ValueOrDefault($(IsProductPackage),'false'))</IsProductPackage>
+        <IsShippingPackage>$([MSBuild]::ValueOrDefault($(IsShippingPackage),'false'))</IsShippingPackage>
         <ProjectFileRelativePath>$([MSBuild]::MakeRelative($(RepositoryRoot), $(MSBuildProjectFullPath)))</ProjectFileRelativePath>
       </ProvidesReference>
     </ItemGroup>
