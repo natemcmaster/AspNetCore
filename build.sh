@@ -296,6 +296,9 @@ msbuild_args[${#msbuild_args[*]}]="-p:_RunTests=$run_tests"
 msbuild_args[${#msbuild_args[*]}]="-p:TargetArchitecture=$target_arch"
 msbuild_args[${#msbuild_args[*]}]="-p:TargetOsName=$target_os_name"
 
+# Disable downloading ref assemblies as a tarball. Use netfx refs from the Microsoft.NETFramework.ReferenceAssemblies NuGet package instead.
+[ -z "${KOREBUILD_SKIP_INSTALL_NETFX:-}" ] && KOREBUILD_SKIP_INSTALL_NETFX=1
+
 set_korebuildsettings "$tools_source" "$DOTNET_HOME" "$repo_path" "$config_file" "$ci"
 
 # This incantation avoids unbound variable issues if msbuild_args is empty
