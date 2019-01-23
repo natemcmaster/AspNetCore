@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.HttpOverrides" />
-    <Reference Include="Microsoft.AspNetCore.Server.Kestrel" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
 </Project>

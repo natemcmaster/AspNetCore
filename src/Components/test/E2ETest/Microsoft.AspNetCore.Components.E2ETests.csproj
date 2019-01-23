@@ -22,9 +22,7 @@
   </Target>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Hosting" />
-    <Reference Include="Microsoft.AspNetCore.Server.Kestrel" />
-    <Reference Include="Microsoft.AspNetCore.StaticFiles" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Selenium.Support" />
     <Reference Include="Selenium.WebDriver" />
   </ItemGroup>
