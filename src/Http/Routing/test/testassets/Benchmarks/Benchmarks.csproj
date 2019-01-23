@@ -8,10 +8,7 @@
 
    <!--These references are used when running locally-->
   <ItemGroup Condition="'$(UseP2PReferences)'=='true'">
-    <Reference Include="Microsoft.AspNetCore.Routing" />
-    <Reference Include="Microsoft.AspNetCore.Server.Kestrel" />
-    <Reference Include="Microsoft.Extensions.Configuration.CommandLine" />
-    <Reference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
    <!--These references are used when running on the Benchmarks Server-->

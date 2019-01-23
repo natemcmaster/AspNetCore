@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Mvc" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.Mvc.Api.Analyzers" />
 
     <Reference Include="Microsoft.AspNetCore.Analyzer.Testing" />

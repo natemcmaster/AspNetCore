@@ -16,10 +16,8 @@
 
   <!-- These references are used when running locally -->
   <ItemGroup Condition="'$(BenchmarksTargetFramework)' == ''">
-    <Reference Include="Microsoft.AspNetCore.Server.Kestrel" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" />
-
-    <Reference Include="Microsoft.Extensions.Configuration.CommandLine" />
   </ItemGroup>
 
   <!-- These references are used when running on the Benchmarks Server -->

@@ -5,14 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Session" />
-    <Reference Include="Microsoft.AspNetCore.Server.IISIntegration" />
-    <Reference Include="Microsoft.AspNetCore.Server.Kestrel" />
-    <Reference Include="Microsoft.Extensions.Caching.Memory" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
     <Reference Include="Microsoft.Extensions.Caching.SqlServer" />
-    <Reference Include="Microsoft.Extensions.Configuration.UserSecrets" />
-    <Reference Include="Microsoft.Extensions.Logging.Console" />
   </ItemGroup>
 
 </Project>

@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="BenchmarkDotNet" />
-    <Reference Include="Microsoft.AspNetCore.Http" />
     <Reference Include="Microsoft.AspNetCore.BenchmarkRunner.Sources" PrivateAssets="All" />
   </ItemGroup>
 

@@ -30,15 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonPackageVersion)" />
+    <Reference Include="Newtonsoft.Json" />
   </ItemGroup>
-
-  <!-- <ItemGroup>
-    <ProjectReference Include="..\src\Microsoft.AspNetCore.App.shfxproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <OutputItemType>_ResolvedFrameworkReference</OutputItemType>
-    </ProjectReference>
-  </ItemGroup> -->
 
   <Target Name="GenerateTestData" BeforeTargets="GetAssemblyAttributes" DependsOnTargets="ResolveProjectReferences">
     <ItemGroup>

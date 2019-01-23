@@ -8,11 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Hosting" />
-    <Reference Include="Microsoft.AspNetCore.Server.IIS" />
-    <Reference Include="Microsoft.AspNetCore.Server.IISIntegration" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.Server.IntegrationTesting.IIS" />
-    <Reference Include="Microsoft.AspNetCore.Server.Kestrel" />
   </ItemGroup>
 
 </Project>

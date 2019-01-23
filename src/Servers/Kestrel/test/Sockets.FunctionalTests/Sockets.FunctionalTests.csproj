@@ -16,11 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Http.Abstractions" />
-    <Reference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets" />
-    <Reference Include="Microsoft.AspNetCore.Server.Kestrel" />
-    <Reference Include="Microsoft.AspNetCore.Server.Kestrel.Core" />
-    <Reference Include="Newtonsoft.Json" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="System.Net.Http.WinHttpHandler" />
   </ItemGroup>
 

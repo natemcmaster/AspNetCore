@@ -6,12 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Mvc.Core" />
-    <Reference Include="Microsoft.AspNetCore.Mvc.DataAnnotations" />
-    <Reference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" />
-
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.Testing" />
-    <Reference Include="Microsoft.Extensions.WebEncoders" />
     <Reference Include="Moq" />
   </ItemGroup>
 

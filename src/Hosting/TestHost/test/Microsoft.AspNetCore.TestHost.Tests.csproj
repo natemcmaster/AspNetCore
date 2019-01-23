@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.TestHost" />
     <Reference Include="Microsoft.Extensions.DiagnosticAdapter" />
-    <Reference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
 
 </Project>

@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Server.IISIntegration" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="..\..\test\IISExpress.FunctionalTests\IISExpress.FunctionalTests.csproj" />
     <ProjectReference Include="..\..\test\IIS.Tests\IIS.Tests.csproj" />
     <ProjectReference Include="..\..\test\testassets\InProcessWebSite\InProcessWebSite.csproj">

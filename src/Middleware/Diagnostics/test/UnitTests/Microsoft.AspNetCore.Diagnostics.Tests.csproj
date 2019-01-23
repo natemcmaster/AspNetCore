@@ -14,11 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Diagnostics" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.TestHost" />
-    <Reference Include="Microsoft.Extensions.DependencyInjection" />
     <Reference Include="Microsoft.Extensions.DiagnosticAdapter" />
-    <Reference Include="Microsoft.Extensions.FileProviders.Embedded" />
   </ItemGroup>
 
 </Project>

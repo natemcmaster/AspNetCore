@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Server.HttpSys" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="System.Net.Http.WinHttpHandler" />
   </ItemGroup>
 
