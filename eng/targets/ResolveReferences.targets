@@ -184,8 +184,6 @@
       <ProjectReference Include="@(_SharedFrameworkProjectRef)">
         <!-- This instructs MSBuild not to copy into project's bin folders. -->
         <Private>false</Private>
-        <!-- This is required to make .deps.json think that this isn't actually a project reference. -->
-        <ReferenceSourceTarget>ResolveAssemblyReference</ReferenceSourceTarget>
       </ProjectReference>
     </ItemGroup>
   </Target>
