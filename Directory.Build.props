@@ -92,6 +92,13 @@
     <InstallersOutputPath>$(ArtifactsDir)installers\$(Configuration)\</InstallersOutputPath>
   </PropertyGroup>
 
+  <!-- Ensure these output paths exist. -->
+  <ItemGroup>
+    <CreateDirectory Include="$(ArtifactsShippingPackagesDir)" />
+    <CreateDirectory Include="$(ArtifactsNonShippingPackagesDir)" />
+    <CreateDirectory Include="$(InstallersOutputPath)" />
+  </ItemGroup>
+
   <!-- The location of the local installation of the .NET Core shared framework. -->
   <PropertyGroup>
     <LocalDotNetRoot Condition="'$(OS)' == 'Windows_NT'">$(RepositoryRoot).dotnet\$(TargetArchitecture)\</LocalDotNetRoot>
