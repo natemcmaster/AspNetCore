@@ -32,6 +32,22 @@
     <Reference Include="@(ExternalAspNetCoreAppReference)" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(VCTargetsPath)' != '' AND '$(TargetOSName)' == 'win' AND ('$(TargetArchitecture)' == 'x64' OR '$(TargetArchitecture)' == 'x86') ">
+    <ProjectReference Include="$(RepositoryRoot)src\Servers\IIS\AspNetCoreModuleV2\InProcessRequestHandler\InProcessRequestHandler.vcxproj">
+      <SetPlatform Condition="'$(TargetArchitecture)' == 'x64'">Platform=x64</SetPlatform>
+      <SetPlatform Condition="'$(TargetArchitecture)' == 'x86'">Platform=Win32</SetPlatform>
+      <!-- This is a native project, so the SDK does not support referencing this normally. -->
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <!-- NativeContent is a custom type of item group which is assigned a target path after project references are resolved.  -->
+      <OutputItemType>NativeContent</OutputItemType>
+      <!-- This instructs the ProjectRef protocol to collect symbols as well as built output -->
+      <Targets>Build;BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup</Targets>
+      <!-- Optimization. Native projects don't have a .NET TargetFramework -->
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+      <UndefineProperties>TargetFramework</UndefineProperties>
+    </ProjectReference>
+  </ItemGroup>
+
   <ItemGroup>
     <!-- This package is only used so we can acquire the crossgen tool. -->
     <PackageReference Include="$(CrossGenToolPackageId)">
@@ -71,6 +87,7 @@
       ResolveReferences;
       GeneratePublishRuntimeConfigurationFile;
       GenerateSharedFrameworkDependencyFile;
+      CopyFilesToOutputDirectory;
       ComputeFilesToPublish;
       CopyFilesToPublishDirectory;
       PrepareForRun;
@@ -90,8 +107,26 @@
     <Message Importance="High" Text="$(MSBuildProjectName) -> $(SharedFxOutputPath)" />
   </Target>
 
-  <!-- No need to copy to a bin directory. -->
-  <Target Name="CopyFilesToOutputDirectory" />
+  <Target Name="_GetNativeContentCopyToOutputDirectoryItems"
+          BeforeTargets="GetCopyToOutputDirectoryItems;GetCopyToPublishDirectoryItems"
+          DependsOnTargets="ResolveProjectReferences">
+
+    <ItemGroup>
+      <!-- Prepend LinkBase to output path. -->
+      <NativeContent>
+        <Link>%(FileName)%(Extension)</Link>
+        <!-- Don't put this content in a nuget package. -->
+        <Pack>false</Pack>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </NativeContent>
+    </ItemGroup>
+
+    <!-- Add the item to the ContentWithTargetPath group, which is then used by GetCopyToOutputDirectoryItems to copy to the correct output location. -->
+    <AssignTargetPath Files="@(NativeContent)" RootFolder="$(MSBuildProjectDirectory)">
+      <Output TaskParameter="AssignedFiles" ItemName="ContentWithTargetPath" />
+    </AssignTargetPath>
+  </Target>
 
   <!-- Generates the .version file in the shared framework -->
   <Target Name="GenerateSharedFxVersionsFile">
@@ -110,14 +145,15 @@
   </Target>
 
   <Target Name="GenerateSharedFrameworkDependencyFile"
-          Inputs="$(MSBuildAllProjects);@(ReferencePath)"
+          DependsOnTargets="ComputeFilesToPublish"
+          Inputs="$(MSBuildAllProjects);$(_RepoTaskAssembly);$(ProjectAssetsFile);@(ResolvedFileToPublish)"
           Outputs="$(DepsFilePath)">
     <RepoTasks.GenerateSharedFrameworkDepsFile
       DepsFilePath="$(DepsFilePath)"
       TargetFramework="$(TargetFrameworkMoniker)"
       FrameworkName="$(SharedFxName)"
       FrameworkVersion="$(SharedFxVersion)"
-      ReferencePaths="@(ReferencePath)"
+      References="@(ResolvedFileToPublish)"
       RuntimeIdentifier="$(RuntimeIdentifier)" />
   </Target>
 

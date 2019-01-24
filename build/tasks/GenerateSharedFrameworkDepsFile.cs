@@ -31,7 +31,7 @@ namespace RepoTasks
 
 
         [Required]
-        public ITaskItem[] ReferencePaths { get; set; }
+        public ITaskItem[] References { get; set; }
 
         [Required]
         public string RuntimeIdentifier { get; set; }
@@ -50,21 +50,30 @@ namespace RepoTasks
             var nativeFiles = new List<RuntimeFile>();
             var resourceAssemblies = new List<ResourceAssembly>();
 
-            foreach (var reference in ReferencePaths)
+            foreach (var reference in References)
             {
-                var packageId = reference.GetMetadata("NuGetPackageId");
-                if (string.Equals("Microsoft.NETCore.App", packageId, StringComparison.OrdinalIgnoreCase))
+                var filePath = reference.ItemSpec;
+                var fileExt = Path.GetExtension(filePath);
+                if (string.Equals(".pdb", fileExt, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
-                var filePath = reference.ItemSpec;
+
                 var fileName = Path.GetFileName(filePath);
-                var fileVersion = FileUtilities.GetFileVersion(filePath);
+                var fileVersion = FileUtilities.GetFileVersion(filePath)?.ToString() ?? string.Empty;
                 var assemblyVersion = FileUtilities.TryGetAssemblyVersion(filePath);
-                var runtimeFile = new RuntimeFile(fileName,
-                     fileVersion: fileVersion?.ToString() ?? string.Empty,
-                     assemblyVersion: assemblyVersion?.ToString() ?? string.Empty);
-                runtimeFiles.Add(runtimeFile);
+                if (assemblyVersion == null)
+                {
+                    var nativeFile = new RuntimeFile(fileName, null, fileVersion);
+                    nativeFiles.Add(nativeFile);
+                }
+                else
+                {
+                    var runtimeFile = new RuntimeFile(fileName,
+                        fileVersion: fileVersion,
+                        assemblyVersion: assemblyVersion.ToString());
+                    runtimeFiles.Add(runtimeFile);
+                }
             }
 
             var runtimePackageName = $"runtime.{RuntimeIdentifier}.{FrameworkName}";
@@ -72,9 +81,9 @@ namespace RepoTasks
             var runtimeLibrary = new RuntimeLibrary("package",
                runtimePackageName,
                FrameworkVersion,
-               string.Empty,
-               new[] { new RuntimeAssetGroup(string.Empty, runtimeFiles) },
-               new[] { new RuntimeAssetGroup(string.Empty, nativeFiles) },
+               hash: string.Empty,
+               runtimeAssemblyGroups: new[] { new RuntimeAssetGroup(string.Empty, runtimeFiles) },
+               nativeLibraryGroups: new[] { new RuntimeAssetGroup(string.Empty, nativeFiles) },
                Enumerable.Empty<ResourceAssembly>(),
                Array.Empty<Dependency>(),
                hashPath: null,
@@ -89,9 +98,21 @@ namespace RepoTasks
 
             Directory.CreateDirectory(Path.GetDirectoryName(DepsFilePath));
 
-            using (var depsStream = File.Create(DepsFilePath))
+            try
             {
-                new DependencyContextWriter().Write(context, depsStream);
+                using (var depsStream = File.Create(DepsFilePath))
+                {
+                    new DependencyContextWriter().Write(context, depsStream);
+                }
+            }
+            catch (Exception ex)
+            {
+                // If there is a problem, ensure we don't write a partially complete version to disk.
+                if (File.Exists(DepsFilePath))
+                {
+                    File.Delete(DepsFilePath);
+                }
+                Log.LogErrorFromException(ex);
             }
         }
     }

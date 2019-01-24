@@ -70,7 +70,6 @@
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <_FrameworkProvidedReference Include="System.Buffers" />
-    <_FrameworkProvidedReference Include="System.Buffers" />
   </ItemGroup>
 
 </Project>
