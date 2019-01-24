@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <Reference Include="Microsoft.AspNetCore.Server.IntegrationTesting" />
+    <ProjectReference Include="$(RepositoryRoot)src\Hosting\Server.IntegrationTesting\src\Microsoft.AspNetCore.Server.IntegrationTesting.csproj" />
     <Reference Include="Microsoft.Extensions.Logging.Testing" />
   </ItemGroup>
 

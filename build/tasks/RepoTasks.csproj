@@ -8,6 +8,7 @@
     <DefineConstants Condition="'$(PublishToAzureFeed)' == 'true'">$(DefineConstants);BUILD_AZ_TASKS</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>embedded</DebugType>
+    <DisablePackageReferenceRestrictions>true</DisablePackageReferenceRestrictions>
   </PropertyGroup>
 
   <ItemGroup>

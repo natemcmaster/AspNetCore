@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <Reference Include="Microsoft.AspNetCore.Server.IntegrationTesting.IIS" />
+    <ProjectReference Include="$(RepositoryRoot)src\Servers\IIS\IntegrationTesting.IIS\src\Microsoft.AspNetCore.Server.IntegrationTesting.IIS.csproj" />
     <Reference Include="Microsoft.Extensions.Logging.Testing" />
     <Reference Include="System.Diagnostics.EventLog" />
   </ItemGroup>

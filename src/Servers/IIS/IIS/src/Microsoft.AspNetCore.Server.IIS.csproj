@@ -17,7 +17,6 @@
   <ItemGroup>
     <Compile Include="$(SharedSourceRoot)Buffers.MemoryPool\**\*.cs" />
     <Compile Include="$(SharedSourceRoot)HttpSys\**\*.cs" />
-    <Content Include="$(PackageId).targets" PackagePath="build/$(TargetFramework)/" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,5 +27,4 @@
     <Reference Include="System.Security.Principal.Windows" />
   </ItemGroup>
 
-  <Import Project="..\..\build\assets.props" />
 </Project>

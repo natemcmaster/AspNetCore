@@ -35,9 +35,13 @@
     <ProjectReference Include="..\..\test\testassets\StressTestWebSite\StressTestWebSite.csproj">
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="$(RepositoryRoot)src\Hosting\Server.IntegrationTesting\src\Microsoft.AspNetCore.Server.IntegrationTesting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="BenchmarkDotNet" />
     <Reference Include="Microsoft.AspNetCore.BenchmarkRunner.Sources" PrivateAssets="All" />
-    <Reference Include="Microsoft.AspNetCore.Server.IntegrationTesting" />
+    <Reference Include="Microsoft.AspNetCore.Server.IISIntegration" />
   </ItemGroup>
 
 </Project>

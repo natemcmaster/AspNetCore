@@ -18,8 +18,8 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="$(RepositoryRoot)src\Servers\IIS\IntegrationTesting.IIS\src\Microsoft.AspNetCore.Server.IntegrationTesting.IIS.csproj" />
     <Reference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
-    <Reference Include="Microsoft.AspNetCore.Server.IntegrationTesting.IIS" />
     <Reference Include="Microsoft.Extensions.CommandLineUtils.Sources" />
     <Reference Include="Microsoft.Extensions.Logging.Testing" />
     <Reference Include="System.Data.SqlClient" />
