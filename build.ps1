@@ -217,9 +217,7 @@ if (Test-Path $ConfigFile) {
     }
 }
 
-$DotNetHome = if ($env:DOTNET_HOME) { $env:DOTNET_HOME } `
-              else { Join-Path $PSScriptRoot '.dotnet'}
-
+$DotNetHome = Join-Path $PSScriptRoot '.dotnet'
 $env:DOTNET_HOME = $DotNetHome
 
 # Execute

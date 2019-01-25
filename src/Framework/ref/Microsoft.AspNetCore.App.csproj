@@ -55,6 +55,7 @@
       <ExcludeAssets>All</ExcludeAssets>
       <PrivateAssets>All</PrivateAssets>
       <Publish>false</Publish>
+      <AllowExplicitReference>true</AllowExplicitReference>
     </PackageReference>
   </ItemGroup
   >

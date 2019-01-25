@@ -259,8 +259,7 @@ if [ -f "$config_file" ]; then
     [ ! -z "${config_tools_source:-}" ] && tools_source="$config_tools_source"
 fi
 
-[ -z "${DOTNET_HOME:-}" ] && DOTNET_HOME="$DIR/.dotnet"
-export DOTNET_HOME="$DOTNET_HOME"
+export DOTNET_HOME="$DIR/.dotnet"
 
 get_korebuild
 
