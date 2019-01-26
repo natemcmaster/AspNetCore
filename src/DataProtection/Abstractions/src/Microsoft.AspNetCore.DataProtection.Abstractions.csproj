@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <Description>ASP.NET Core data protection abstractions.
+
 Commonly used types:
 Microsoft.AspNetCore.DataProtection.IDataProtectionProvider
 Microsoft.AspNetCore.DataProtection.IDataProtector</Description>

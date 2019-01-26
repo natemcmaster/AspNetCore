@@ -22,14 +22,41 @@
   <PropertyGroup>
     <ResolveReferencesDependsOn>
       ResolveCustomReferences;
-      ResolveCustomFrameworkReferences;
       $(ResolveReferencesDependsOn);
     </ResolveReferencesDependsOn>
 
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
 
-    <SharedFrameworkProjectPath>$(RepositoryRoot)src\Framework\ref\Microsoft.AspNetCore.App.csproj</SharedFrameworkProjectPath>
+    <_SharedFrameworkTargetingPackProjectPath>$(RepositoryRoot)src\Framework\ref\Microsoft.AspNetCore.App.csproj</_SharedFrameworkTargetingPackProjectPath>
+
+    <!--
+      True when a project might reference Microsoft.AspNetCore.App and it should be re-routed to the local version
+      being build. This check is in place to avoid unnecessary work in projects that definitely don't or can't
+      reference the shared framework.
+    -->
+    <_LocalAspNetCoreAppCandidate Condition="'$(IsAspNetCoreApp)' != 'true' AND '$(TargetFrameworkIdentifier)' == '.NETCoreApp' AND '$(_TargetFrameworkVersionWithoutV)' == '$(AspNetCoreMajorVersion).$(AspNetCoreMinorVersion)' ">true</_LocalAspNetCoreAppCandidate>
   </PropertyGroup>
+
+  <Import Project="ResolveReferences.DesignTime.targets" Condition="'$(DesignTimeBuild)' == 'true'" />
+
+  <!-- This overrides the bundled SDK information to point to a local version of the targeting pack and shared runtime -->
+  <ItemGroup Condition=" '$(_LocalAspNetCoreAppCandidate)' == 'true' " >
+    <KnownFrameworkReference Update="Microsoft.AspNetCore.App">
+      <DefaultRuntimeFrameworkVersion>$(SharedFxVersion)</DefaultRuntimeFrameworkVersion>
+      <LatestRuntimeFrameworkVersion>$(SharedFxVersion)</LatestRuntimeFrameworkVersion>
+      <TargetingPackName>Microsoft.AspNetCore.App.Ref</TargetingPackName>
+      <TargetingPackVersion>$(SharedFxVersion)</TargetingPackVersion>
+    </KnownFrameworkReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(_LocalAspNetCoreAppCandidate)' == 'true' AND @(FrameworkReference->AnyHaveMetadataValue('Identity', 'Microsoft.AspNetCore.App'))">
+    <!-- When there is a FrameworkReference, alsp add a ProjectReference only for the sake of enforcing build order. -->
+    <ProjectReference Include="$(_SharedFrameworkTargetingPackProjectPath)">
+      <ReferenceOutputAssembly Condition="'$(DesignTimeBuild)' != 'true'">false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <!-- Add MSBuild projects to the inputs for runtimeconfig.json generation in the event the version is updated. -->
+    <GenerateRuntimeConfigurationFilesInputs Include="$(MSBuildAllProjects)" />
+  </ItemGroup>
 
   <ItemDefinitionGroup>
     <Reference>
@@ -110,81 +137,6 @@
 
     <Error Condition="@(_InvalidReferenceToNonSharedFxAssembly->Count()) != 0 AND '%(_InvalidReferenceToNonSharedFxAssembly.SharedSources)' != 'true'"
            Text="Cannot reference &quot;%(_InvalidReferenceToNonSharedFxAssembly.Identity)&quot;. This assembly is not in the shared framework." />
-  </Target>
-
-  <!-- This target determines if a project has a reference to Microsoft.AspNetCore.App and it should be resolved to the locally-built version of this framework. -->
-  <Target Name="_CheckIfAspNetAppIsReferenced"
-          Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp' AND '$(_TargetFrameworkVersionWithoutV)' == '$(AspNetCoreMajorVersion).$(AspNetCoreMinorVersion)' "
-          BeforeTargets="_CheckForInvalidConfigurationAndPlatform;_DefaultMicrosoftNETPlatformLibrary">
-    <PropertyGroup>
-      <_ReferencesLocalAspNetCoreApp>@(FrameworkReference->AnyHaveMetadataValue('Identity', 'Microsoft.AspNetCore.App'))</_ReferencesLocalAspNetCoreApp>
-      <MicrosoftNETPlatformLibrary Condition="'$(_ReferencesLocalAspNetCoreApp)' == 'true'">Microsoft.AspNetCore.App</MicrosoftNETPlatformLibrary>
-    </PropertyGroup>
-  </Target>
-
-  <!--
-    This target resolves FrameworkReference to the locally built version of the shared framework.
-    This is overrides the default SDK resolution of FrameworkReference to AspNetCore.App.
-  -->
-  <Target Name="ResolveCustomFrameworkReferences"
-          Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'"
-          DependsOnTargets="_CheckIfAspNetAppIsReferenced"
-          BeforeTargets="ResolveFrameworkReferences;CollectPackageReferences;_GenerateRestoreProjectPathItemsPerFramework">
-
-    <ItemGroup Condition="'$(_ReferencesLocalAspNetCoreApp)' == 'true'">
-      <FrameworkReference Remove="Microsoft.AspNetCore.App" />
-      <RuntimeFramework Include="Microsoft.AspNetCore.App" Version="$(SharedFxVersion)" />
-      <ProjectReference Include="$(SharedFrameworkProjectPath)">
-        <PrivateAssets>All</PrivateAssets>
-      </ProjectReference>
-      <GenerateRuntimeConfigurationFilesInputs Include="$(MSBuildAllProjects)" />
-    </ItemGroup>
-  </Target>
-
-  <!--
-    This target collects a list of the project references which are used to create the shared framework.
-    The items it returns are used to knockout assemblies from the local bin directory and .deps.json files.
-  -->
-  <Target Name="ResolveSharedFrameworkProjectReferences"
-          DependsOnTargets="_CheckIfAspNetAppIsReferenced">
-    <MSBuild Projects="$(SharedFrameworkProjectPath)"
-             Targets="_GetSharedFxProjectReferences"
-             Condition="'$(_ReferencesLocalAspNetCoreApp)' == 'true'">
-      <Output TaskParameter="TargetOutputs" ItemName="_SharedFrameworkProjectRef" />
-    </MSBuild>
-  </Target>
-
-  <!--
-    This target updates the transitive ProjectReference item normally resolved
-
-  -->
-  <Target Name="UpdateTransitiveSharedFrameworkReferences"
-          BeforeTargets="AssignProjectConfiguration"
-          DependsOnTargets="_CheckIfAspNetAppIsReferenced;IncludeTransitiveProjectReferences;ResolveSharedFrameworkProjectReferences"
-          Condition="'$(_ReferencesLocalAspNetCoreApp)' == 'true'">
-
-    <!-- Normalize ProjectReferences to absolute path.
-      This is required so we can match up project references
-      which came from the shared framework based on item identity.
-    -->
-    <ItemGroup>
-      <_Temp Remove="@(Temp)" />
-      <_Temp Include="@(ProjectReference)" />
-      <ProjectReference Remove="@(ProjectReference)" />
-    </ItemGroup>
-
-    <ConvertToAbsolutePath Paths="@(_Temp)">
-      <Output TaskParameter="AbsolutePaths" ItemName="ProjectReference"/>
-    </ConvertToAbsolutePath>
-
-    <!-- Update metadata on the project references to assemblies in the shared framework. -->
-    <ItemGroup>
-      <ProjectReference Remove="@(_SharedFrameworkProjectRef)" />
-      <ProjectReference Include="@(_SharedFrameworkProjectRef)">
-        <!-- This instructs MSBuild not to copy into project's bin folders. -->
-        <Private>false</Private>
-      </ProjectReference>
-    </ItemGroup>
   </Target>
 
   <!--

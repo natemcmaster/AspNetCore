@@ -2,14 +2,16 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp$(AspNetCoreMajorVersion).$(AspNetCoreMinorVersion)</TargetFramework>
     <IsAspNetCoreApp>true</IsAspNetCoreApp>
     <SharedFxName>$(MSBuildProjectName)</SharedFxName>
+    <TargetingPackName>Microsoft.AspNetCore.App.Ref</TargetingPackName>
     <RuntimeIdentifier>$(TargetOsName)-$(TargetArchitecture)</RuntimeIdentifier>
     <BaseSharedFrameworkName>Microsoft.NETCore.App</BaseSharedFrameworkName>
     <CrossGenToolPackageId>runtime.$(RuntimeIdentifier).$(BaseSharedFrameworkName)</CrossGenToolPackageId>
 
     <SharedFxOutputPath>$(LocalDotNetRoot)shared\$(SharedFxName)\$(SharedFxVersion)\</SharedFxOutputPath>
+    <TargetingPackOutputPath>$(NetCoreTargetingPackRoot)$(TargetingPackName)\$(SharedFxVersion)\ref\$(TargetFramework)\</TargetingPackOutputPath>
     <VersionFileOutputPath>$(SharedFxOutputPath).version</VersionFileOutputPath>
 
     <CrossGenToolPath>$(NuGetPackageRoot)$(CrossGenToolPackageId)\$(MicrosoftNETCoreAppPackageVersion)\tools\crossgen</CrossGenToolPath>
@@ -61,6 +63,8 @@
   >
   <ItemGroup>
     <CreateDirectory Include="$(PublishDir)" />
+    <CreateDirectory Include="$(SharedFxOutputPath)" />
+    <CreateDirectory Include="$(TargetingPackOutputPath)" />
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
@@ -86,6 +90,7 @@
       ResolveCommitHash;
       GenerateSharedFxVersionsFile;
       ResolveReferences;
+      CopyReferencesToFakeTargetingPack;
       GenerateBuildRuntimeConfigurationFiles;
       GenerateSharedFrameworkDependencyFile;
       CopyFilesToOutputDirectory;
@@ -143,6 +148,29 @@
   </Target>
 
   <Target Name="CrossGenOutput">
+  </Target>
+
+  <Target Name="_ResolveCustomTargetingPackReferencesDesignTime"
+          DependsOnTargets="ResolveProjectReferencesDesignTime"
+          Returns="@(_ProjectReferencesFromRAR->'$(TargetingPackOutputPath)%(FileName)%(Extension)')" />
+
+  <Target Name="_ResolveCustomTargetingPackReferences"
+          DependsOnTargets="FindReferenceAssembliesForReferences">
+    <ItemGroup>
+      <TargetingPackReferencePath
+          Include="@(ReferencePathWithRefAssemblies)"
+          Exclude="@(ReferencePathWithRefAssemblies->WithMetadataValue('ReferenceGrouping', 'Microsoft.NETCore.App'))" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CopyReferencesToFakeTargetingPack"
+          DependsOnTargets="_ResolveCustomTargetingPackReferences"
+          Inputs="@(TargetingPackReferencePath)"
+          Outputs="@(TargetingPackReferencePath->'$(TargetingPackOutputPath)%(FileName)%(Extension)')">
+
+    <Copy SourceFiles="@(TargetingPackReferencePath)"
+          DestinationFiles="@(TargetingPackReferencePath->'$(TargetingPackOutputPath)%(FileName)%(Extension)')"
+          UseHardlinksIfPossible="true" />
   </Target>
 
   <Target Name="GenerateSharedFrameworkDependencyFile"

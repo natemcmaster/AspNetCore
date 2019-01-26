@@ -1,0 +1,36 @@
+<!--
+The targets in this file are meant to be imported when Visual Studio is in use only.
+They plug in to the design time build to provide the project system with a mapping
+of .dll's to projects so intellisense and code navigation works.
+
+See https://github.com/dotnet/project-system/blob/master/docs/design-time-builds.md
+for more details on design time builds and how to debug this file.
+-->
+<Project>
+
+  <Target Name="ResolveAspNetCoreFrameworkAssembliesDesignTime"
+          Condition=" '$(_LocalAspNetCoreAppCandidate)' == 'true' "
+          DependsOnTargets="ResolveAssemblyReferences"
+          BeforeTargets="ResolveProjectReferencesDesignTime;ResolveAssemblyReferencesDesignTime">
+
+    <PropertyGroup>
+      <_ReferencesLocalAspNetCoreApp>@(FrameworkReference->AnyHaveMetadataValue('Identity', 'Microsoft.AspNetCore.App'))</_ReferencesLocalAspNetCoreApp>
+    </PropertyGroup>
+
+    <MSBuild Condition=" '$(_ReferencesLocalAspNetCoreApp)' == 'true' "
+             Projects="$(_SharedFrameworkTargetingPackProjectPath)"
+             Targets="_ResolveCustomTargetingPackReferencesDesignTime">
+      <Output TaskParameter="TargetOutputs" ItemName="_TargetingPackProjectReference" />
+    </MSBuild>
+
+    <ItemGroup Condition=" '$(_ReferencesLocalAspNetCoreApp)' == 'true' ">
+      <!-- Replace assemblies resolved as 'RAR' and entries resolved as 'ProjectReference'. -->
+      <ReferencePath Remove="@(_TargetingPackProjectReference)" />
+      <ReferencePath Include="@(_TargetingPackProjectReference)">
+        <ReferenceGrouping>Microsoft.AspNetCore.App</ReferenceGrouping>
+        <ReferenceGroupingDisplayName>Microsoft.AspNetCore.App</ReferenceGroupingDisplayName>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>
+
+</Project>

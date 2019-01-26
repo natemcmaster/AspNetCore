@@ -93,6 +93,8 @@
   <PropertyGroup>
     <LocalDotNetRoot Condition="'$(OS)' == 'Windows_NT'">$(RepositoryRoot).dotnet\$(TargetArchitecture)\</LocalDotNetRoot>
     <LocalDotNetRoot Condition="'$(OS)' != 'Windows_NT'">$(RepositoryRoot).dotnet\</LocalDotNetRoot>
+    <!-- Override the SDK default and point to local .dotnet folder. -->
+    <NetCoreTargetingPackRoot>$(LocalDotNetRoot)packs\</NetCoreTargetingPackRoot>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(OutputInRepoRoot)' == 'true' ">
