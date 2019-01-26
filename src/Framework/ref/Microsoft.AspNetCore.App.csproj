@@ -86,7 +86,7 @@
       ResolveCommitHash;
       GenerateSharedFxVersionsFile;
       ResolveReferences;
-      GeneratePublishRuntimeConfigurationFile;
+      GenerateBuildRuntimeConfigurationFiles;
       GenerateSharedFrameworkDependencyFile;
       CopyFilesToOutputDirectory;
       ComputeFilesToPublish;

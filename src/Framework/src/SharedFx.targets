@@ -17,7 +17,7 @@ This targets file should only be imported by .shfxproj files.
       ComputeAndCopyFilesToPublishDirectory;
       GeneratePublishDependencyFile;
       GenerateSharedFxMetadataFiles;
-      GeneratePublishRuntimeConfigurationFile;
+      GenerateBuildRuntimeConfigurationFiles;
       CopySharedFxToOutput;
       CollectSharedFxOutput;
       PostBuildEvent;

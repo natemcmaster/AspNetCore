@@ -132,8 +132,8 @@
           BeforeTargets="ResolveFrameworkReferences;CollectPackageReferences;_GenerateRestoreProjectPathItemsPerFramework">
 
     <ItemGroup Condition="'$(_ReferencesLocalAspNetCoreApp)' == 'true'">
-      <RuntimeFramework Include="Microsoft.AspNetCore.App" Version="$(SharedFxVersion)" />
       <FrameworkReference Remove="Microsoft.AspNetCore.App" />
+      <RuntimeFramework Include="Microsoft.AspNetCore.App" Version="$(SharedFxVersion)" />
       <ProjectReference Include="$(SharedFrameworkProjectPath)">
         <PrivateAssets>All</PrivateAssets>
       </ProjectReference>
