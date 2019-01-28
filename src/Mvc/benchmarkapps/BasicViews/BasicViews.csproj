@@ -24,7 +24,6 @@
 
   <!-- These references are used when running locally -->
   <ItemGroup Condition="'$(BenchmarksTargetFramework)' == ''">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.NET.Sdk.Razor" PrivateAssets="All" />
   </ItemGroup>
 

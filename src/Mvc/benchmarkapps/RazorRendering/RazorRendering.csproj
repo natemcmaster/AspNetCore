@@ -5,9 +5,7 @@
     <IsTestAssetProject>true</IsTestAssetProject>
   </PropertyGroup>
 
-  <!-- These references are used when running locally -->
-  <ItemGroup Condition="'$(BenchmarksTargetFramework)' == ''">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  <ItemGroup>
     <Reference Include="Microsoft.NET.Sdk.Razor" PrivateAssets="All" />
   </ItemGroup>
 
@@ -20,9 +18,6 @@
       DefaultRuntimeFrameworkVersion="$(MicrosoftAspNetCoreAppPackageVersion)"
       LatestRuntimeFrameworkVersion="$(MicrosoftAspNetCoreAppPackageVersion)"
       TargetingPackVersion="$(MicrosoftAspNetCoreAppPackageVersion)" />
-    <Reference Include="Microsoft.NET.Sdk.Razor" PrivateAssets="All" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+
 </Project>

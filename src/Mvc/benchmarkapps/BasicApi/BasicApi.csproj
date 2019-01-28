@@ -24,7 +24,6 @@
 
   <!-- These references are used when building locally or on CI. -->
   <ItemGroup Condition="'$(BenchmarksTargetFramework)' == ''">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <Reference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
   </ItemGroup>

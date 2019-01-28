@@ -66,7 +66,7 @@ namespace MvcSandbox
 
                 builder.MapApplication();
 
-                builder.MapHealthChecks("/healthz");
+                builder.MapTestHealthChecks("/healthz");
             });
 
             app.UseDeveloperExceptionPage();

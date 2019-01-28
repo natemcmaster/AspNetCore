@@ -8,7 +8,4 @@
     <IsTestAssetProject>true</IsTestAssetProject>
   </PropertyGroup>
 
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
 </Project>

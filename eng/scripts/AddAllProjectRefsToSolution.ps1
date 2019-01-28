@@ -2,8 +2,10 @@
 .SYNOPSIS
 This adds the complete closure of project references to a .sln file
 #>
+[CmdletBinding(PositionalBinding = $false)]
 param(
     [string]$WorkingDir,
+    [Alias('sln')]
     [string]$SolutionFile
 )
 
@@ -22,11 +24,11 @@ try {
         $slnCount = Get-ChildItem *.sln | Measure
 
         if ($slnCount.count -eq 0) {
-            Write-Error "Could not find a solution in this directory. Specify one with -SolutionFile <PATH>"
+            Write-Error "Could not find a solution in this directory. Specify one with -sln <PATH>"
             exit 1
         }
         if ($slnCount.count -gt 1) {
-            Write-Error "Multiple solutions found in this directory. Specify which one to modify with -SolutionFile <PATH>"
+            Write-Error "Multiple solutions found in this directory. Specify which one to modify with -sln <PATH>"
             exit 1
         }
         $SolutionFile = Get-ChildItem *.sln | select -first 1

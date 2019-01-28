@@ -139,6 +139,11 @@
            Text="Cannot reference &quot;%(_InvalidReferenceToNonSharedFxAssembly.Identity)&quot;. This assembly is not in the shared framework." />
   </Target>
 
+  <Target Name="_WarnAboutRedundantRef" AfterTargets="ResolveFrameworkReferences">
+    <Warning Condition="@(FrameworkReference->WithMetadataValue('Identity', 'Microsoft.AspNetCore.App')->Count()) &gt; 1"
+             Text="Redundant &lt;FrameworkReference&gt;" />
+  </Target>
+
   <!--
     This target resolves remaining Reference items to Packages, if possible. If not, they are left as Reference items fo the SDK to resolve.
     This executes on NuGet restore and during DesignTimeBuild. It should not run in the outer, cross-targeting build.
