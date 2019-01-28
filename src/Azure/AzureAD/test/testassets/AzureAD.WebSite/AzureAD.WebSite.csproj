@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" />
     <Reference Include="Microsoft.AspNetCore.Authentication.AzureADB2C.UI" />
     <Reference Include="Microsoft.NET.Sdk.Razor" PrivateAssets="All" />

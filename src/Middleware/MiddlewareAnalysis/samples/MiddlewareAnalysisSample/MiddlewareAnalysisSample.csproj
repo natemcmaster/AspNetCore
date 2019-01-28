@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.MiddlewareAnalysis" />
     <Reference Include="Microsoft.Extensions.DiagnosticAdapter" />
   </ItemGroup>

@@ -6,11 +6,6 @@
     <UseP2PReferences Condition="'$(UseP2PReferences)'=='' AND '$(BenchmarksTargetFramework)'==''">true</UseP2PReferences>
   </PropertyGroup>
 
-   <!--These references are used when running locally-->
-  <ItemGroup Condition="'$(UseP2PReferences)'=='true'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
    <!--These references are used when running on the Benchmarks Server-->
   <ItemGroup Condition="'$(BenchmarksTargetFramework)'!=''">
     <KnownFrameworkReference
