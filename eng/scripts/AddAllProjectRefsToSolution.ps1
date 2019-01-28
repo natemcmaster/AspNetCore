@@ -1,6 +1,17 @@
 <#
 .SYNOPSIS
 This adds the complete closure of project references to a .sln file
+
+.EXAMPLE
+Let's say you have a folder of projects in src/Banana/, and a file src/Banana/Banana.sln.
+To traverse the ProjectReference graph to add all dependency projects, run this script:
+
+    ./eng/scripts/AddAllProjectRefsToSolution.ps1 -WorkingDir ./src/Banana/
+
+.EXAMPLE
+If src/Banana/ has multiple .sln files, use the -sln parameter.
+
+    ./eng/scripts/AddAllProjectRefsToSolution.ps1 -WorkingDir ./src/Banana/ -SolutionFile src/Banana/Solution1.sln
 #>
 [CmdletBinding(PositionalBinding = $false)]
 param(
@@ -38,6 +49,9 @@ try {
 
     foreach ($proj in (Get-Content $listFile)) {
         & dotnet sln $SolutionFile add $proj
+        if ($lastexitcode -ne 0) {
+            Write-Warning "Failed to add $proj to $SolutionFile"
+        }
     }
 }
 finally {

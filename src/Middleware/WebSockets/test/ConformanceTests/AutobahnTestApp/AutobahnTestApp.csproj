@@ -9,8 +9,4 @@
     <Content Include="TestResources\testCert.pfx" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
 </Project>

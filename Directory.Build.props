@@ -80,6 +80,7 @@
     <ArtifactsShippingPackagesDir>$(ArtifactsPackagesDir)Shipping\</ArtifactsShippingPackagesDir>
     <ArtifactsNonShippingPackagesDir>$(ArtifactsPackagesDir)NonShipping\</ArtifactsNonShippingPackagesDir>
     <InstallersOutputPath>$(ArtifactsDir)installers\$(Configuration)\</InstallersOutputPath>
+    <VisualStudioSetupOutputPath>$(ArtifactsDir)VSSetup\$(Configuration)\</VisualStudioSetupOutputPath>
   </PropertyGroup>
 
   <!-- Ensure these output paths exist. -->
@@ -87,6 +88,7 @@
     <CreateDirectory Include="$(ArtifactsShippingPackagesDir)" />
     <CreateDirectory Include="$(ArtifactsNonShippingPackagesDir)" />
     <CreateDirectory Include="$(InstallersOutputPath)" />
+    <CreateDirectory Include="$(VisualStudioSetupOutputPath)" />
   </ItemGroup>
 
   <!-- The location of the local installation of the .NET Core shared framework. -->
