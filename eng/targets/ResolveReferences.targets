@@ -49,7 +49,7 @@
     </KnownFrameworkReference>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(_LocalAspNetCoreAppCandidate)' == 'true' AND @(FrameworkReference->AnyHaveMetadataValue('Identity', 'Microsoft.AspNetCore.App'))">
+  <ItemGroup Condition="'$(_LocalAspNetCoreAppCandidate)' == 'true' AND '$(DisableProjectReferenceToSharedFramework)' != 'true' AND @(FrameworkReference->AnyHaveMetadataValue('Identity', 'Microsoft.AspNetCore.App'))">
     <!-- When there is a FrameworkReference, alsp add a ProjectReference only for the sake of enforcing build order. -->
     <ProjectReference Include="$(_SharedFrameworkTargetingPackProjectPath)">
       <ReferenceOutputAssembly Condition="'$(DesignTimeBuild)' != 'true'">false</ReferenceOutputAssembly>

@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\testassets\AzureAD.WebSite\AzureAD.WebSite.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>

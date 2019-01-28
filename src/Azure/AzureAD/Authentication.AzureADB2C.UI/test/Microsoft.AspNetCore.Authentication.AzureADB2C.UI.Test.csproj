@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="Microsoft.AspNetCore.Authentication.AzureADB2C.UI" />
   </ItemGroup>
 

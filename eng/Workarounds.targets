@@ -13,4 +13,9 @@
   <ItemGroup>
     <FileNamesToSign Include="dotnet-blazor.dll" CertificateName="Microsoft400" />
   </ItemGroup>
+
+  <!-- Workaround https://github.com/dotnet/sdk/issues/2875 -->
+  <Target Name="CreateTargetingPackDirectory" BeforeTargets="RestoreProjects">
+    <MakeDir Directories="$(RepositoryRoot).dotnet\$(TargetArchitecture)\packs\Microsoft.AspNetCore.App.Ref\$(SharedFxVersion)\" />
+  </Target>
 </Project>
