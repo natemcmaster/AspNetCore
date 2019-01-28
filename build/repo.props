@@ -1,6 +1,5 @@
 <Project>
   <Import Project="..\eng\targets\RuntimeIdentifiers.props" />
-  <Import Project="SharedFrameworkOnly.props" />
 
   <PropertyGroup>
     <!-- This repo does not have solutions to build -->
@@ -32,6 +31,16 @@
     <BuildNodeJS>true</BuildNodeJS>
     <BuildJava>true</BuildJava>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Workaround https://github.com/aspnet/AspNetCore/issues/6726. Required because illink (part of Microsoft.AspNetCore.Blazor.Mono) depends on .NET Core 2.x -->
+    <DotNetCoreRuntime Include="2.2.1" Arch="$(TargetArchitecture)" />
+
+    <DotNetCoreRuntime Include="$(MicrosoftNETCoreAppPackageVersion)"
+      Arch="$(TargetArchitecture)"
+      Feed="$(DotNetAssetRootUrl)"
+      FeedCredential="$(DotNetAssetRootAccessTokenSuffix)" />
+  </ItemGroup>
 
   <!-- These projects are always excluded, even when -projects is specified on command line. -->
   <ItemGroup>
@@ -161,6 +170,5 @@
   </Choose>
 
   <Import Project="..\eng\Versions.props" />
-  <Import Project="runtimes.props" />
   <Import Project="CodeSign.props" />
 </Project>

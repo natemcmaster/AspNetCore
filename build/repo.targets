@@ -28,14 +28,11 @@
     <CompileDependsOn>$(CompileDependsOn);BuildProjects</CompileDependsOn>
 
     <PackageDependsOn>$(PackageDependsOn);PackProjects</PackageDependsOn>
-    <PackageDependsOn Condition=" '$(BuildAllProjects)' == 'true' ">$(PackageDependsOn);BuildSharedFx;RemoveSharedFrameworkOnlyRefsFromNuspec</PackageDependsOn>
+    <PackageDependsOn Condition=" '$(BuildAllProjects)' == 'true' ">$(PackageDependsOn);BuildSharedFx</PackageDependsOn>
 
     <TestDependsOn />
     <TestDependsOn Condition=" '$(_RunBuild)' == 'true' ">$(TestDependsOn);Compile</TestDependsOn>
     <TestDependsOn>$(TestDependsOn);TestProjects</TestDependsOn>
-
-    <!-- Package modification must happen before code signing. -->
-    <CodeSignDependsOn>$(CodeSignDependsOn);RemoveSharedFrameworkOnlyRefsFromNuspec</CodeSignDependsOn>
   </PropertyGroup>
 
   <Target Name="ShowProjectClosure" DependsOnTargets="ResolveProjects">
@@ -115,18 +112,6 @@
     </PropertyGroup>
 
     <WriteLinesToFile File="$(SharedFxDepList)" Lines="$(SharedFxDepListContent)" Overwrite="true" />
-  </Target>
-
-  <!-- This is temporary until we can use FrameworkReference to build our own packages. -->
-  <Target Name="RemoveSharedFrameworkOnlyRefsFromNuspec">
-    <ItemGroup>
-      <_BuildOutput Include="$(ArtifactsShippingPackagesDir)*.nupkg"
-                    Exclude="$(ArtifactsShippingPackagesDir)*.symbols.nupkg" />
-    </ItemGroup>
-
-    <RepoTasks.RemoveSharedFrameworkDependencies Condition="@(_BuildOutput->Count()) != 0"
-      Files="@(_BuildOutput)"
-      FrameworkOnlyPackages="@(SharedFrameworkOnlyPackage)" />
   </Target>
 
 </Project>
