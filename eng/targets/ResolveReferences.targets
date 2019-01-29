@@ -52,7 +52,7 @@
   <ItemGroup Condition="'$(_LocalAspNetCoreAppCandidate)' == 'true' AND '$(DisableProjectReferenceToSharedFramework)' != 'true' AND @(FrameworkReference->AnyHaveMetadataValue('Identity', 'Microsoft.AspNetCore.App'))">
     <!-- When there is a FrameworkReference, alsp add a ProjectReference only for the sake of enforcing build order. -->
     <ProjectReference Include="$(_SharedFrameworkTargetingPackProjectPath)">
-      <ReferenceOutputAssembly Condition="'$(DesignTimeBuild)' != 'true'">false</ReferenceOutputAssembly>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <!-- Add MSBuild projects to the inputs for runtimeconfig.json generation in the event the version is updated. -->
     <GenerateRuntimeConfigurationFilesInputs Include="$(MSBuildAllProjects)" />
@@ -131,12 +131,12 @@
     individual assemblies.
   -->
   <Target Name="_CheckForReferenceBoundaries" BeforeTargets="CollectPackageReferences;ResolveReferences">
-    <!-- TODO: convert all test and samples to use FrameworkReference too and remove IsImplementationProject from this condition -->
+
     <Error Condition="@(_InvalidReferenceToSharedFxOnlyAssembly->Count()) != 0"
            Text="Cannot reference &quot;%(_InvalidReferenceToSharedFxOnlyAssembly.Identity)&quot; directly because it is part of the shared framework and this project is not. Use &lt;FrameworkReference Include=&quot;Microsoft.AspNetCore.App&quot; /&gt; instead." />
 
     <Error Condition="@(_InvalidReferenceToNonSharedFxAssembly->Count()) != 0 AND '%(_InvalidReferenceToNonSharedFxAssembly.SharedSources)' != 'true'"
-           Text="Cannot reference &quot;%(_InvalidReferenceToNonSharedFxAssembly.Identity)&quot;. This assembly is not in the shared framework." />
+           Text="Cannot reference &quot;%(_InvalidReferenceToNonSharedFxAssembly.Identity)&quot;. This dependency is not in the shared framework. See docs/SharedFramework.md for instructions on how to modify what is in the shared framework." />
   </Target>
 
   <Target Name="_WarnAboutRedundantRef" AfterTargets="ResolveFrameworkReferences">
