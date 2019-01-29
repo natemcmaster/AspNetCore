@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" />
     <!-- Faking like we had Razor-on-Build (RZC) -->
     <ProjectReference Include="..\RazorBuildWebSite.Views\RazorBuildWebSite.Views.csproj" />
     <Reference Include="Microsoft.NET.Sdk.Razor" PrivateAssets="All" />

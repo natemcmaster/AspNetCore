@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
+    <Reference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" />
     <Reference Include="Microsoft.NET.Sdk.Razor" PrivateAssets="All" />
   </ItemGroup>
 
