@@ -13,6 +13,7 @@
     <MicrosoftNETCoreAppPackageVersion>3.0.0-preview-27324-5</MicrosoftNETCoreAppPackageVersion>
     <MicrosoftDotNetPlatformAbstractionsPackageVersion>3.0.0-preview-27324-5</MicrosoftDotNetPlatformAbstractionsPackageVersion>
     <!-- Packages from dotnet/corefx -->
+    <MicrosoftBclJsonSourcesPacakgeVersion>4.6.0-preview.19073.11</MicrosoftBclJsonSourcesPacakgeVersion>
     <MicrosoftCSharpPackageVersion>4.6.0-preview.19073.11</MicrosoftCSharpPackageVersion>
     <MicrosoftWin32RegistryPackageVersion>4.6.0-preview.19073.11</MicrosoftWin32RegistryPackageVersion>
     <SystemComponentModelAnnotationsPackageVersion>4.6.0-preview.19073.11</SystemComponentModelAnnotationsPackageVersion>
@@ -108,7 +109,7 @@
   </PropertyGroup>
   <PropertyGroup Label="Build tool dependencies">
     <InternalAspNetCoreSdkPackageVersion>$(KoreBuildVersion)</InternalAspNetCoreSdkPackageVersion>
-    <InternalAspNetCoreSdkPackageVersion Condition=" '$(KoreBuildVersion)' == '' ">3.0.0-build-20190128.3</InternalAspNetCoreSdkPackageVersion>
+    <InternalAspNetCoreSdkPackageVersion Condition=" '$(KoreBuildVersion)' == '' ">3.0.0-build-20190130.1</InternalAspNetCoreSdkPackageVersion>
     <MicrosoftNETFrameworkReferenceAssembliesPackageVersion>1.0.0-alpha-004</MicrosoftNETFrameworkReferenceAssembliesPackageVersion>
     <MicrosoftNETTestSdkPackageVersion>15.9.0</MicrosoftNETTestSdkPackageVersion>
   </PropertyGroup>
@@ -146,6 +147,9 @@
     <MicrosoftAspNetCoreBlazorMonoPackageVersion>0.8.0-preview-20190125.1</MicrosoftAspNetCoreBlazorMonoPackageVersion>
     <!-- When updating this, ensure you also update src/Components/Browser.JS/src/package.json to reference the corresponding version of @dotnet/jsinterop -->
     <MonoWebAssemblyInteropPackageVersion>0.8.0-preview1-20181126.4</MonoWebAssemblyInteropPackageVersion>
+    <!-- Packages from 2.1/2.2 branches used for site extension build -->
+    <MicrosoftAspNetCoreAzureAppServicesSiteExtension21PackageVersion>2.1.1</MicrosoftAspNetCoreAzureAppServicesSiteExtension21PackageVersion>
+    <MicrosoftAspNetCoreAzureAppServicesSiteExtension22PackageVersion>2.2.0</MicrosoftAspNetCoreAzureAppServicesSiteExtension22PackageVersion>
     <!-- 3rd party dependencies -->
     <AngleSharpPackageVersion>0.9.9</AngleSharpPackageVersion>
     <BenchmarkDotNetPackageVersion>0.10.13</BenchmarkDotNetPackageVersion>

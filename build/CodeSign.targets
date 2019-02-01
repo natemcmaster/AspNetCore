@@ -7,7 +7,7 @@
   <Target Name="CollectFileSignInfo">
     <PropertyGroup>
       <BaseRedistNetCorePath>$(IntermediateDir)ar\</BaseRedistNetCorePath>
-      <RedistNetCorePath>$(BaseRedistNetCorePath)$(SharedFxRid)\</RedistNetCorePath>
+      <RedistNetCorePath>$(BaseRedistNetCorePath)$(TargetRuntimeIdentifier)\</RedistNetCorePath>
     </PropertyGroup>
 
     <ItemGroup>
@@ -30,6 +30,8 @@
       <FilesToExcludeFromSigning Include="$(BaseRedistNetCorePath)win-x86\host\**\*.dll" />
       <FilesToExcludeFromSigning Include="$(BaseRedistNetCorePath)win-arm\host\**\*.dll" />
       <FilesToExcludeFromSigning Include="$(RedistNetCorePath)dotnet.exe" />
+      <FilesToExcludeFromSigning Include="hostpolicy.dll" />
+      <FilesToExcludeFromSigning Include="hostfxr.dll" />
     </ItemGroup>
   </Target>
 </Project>
