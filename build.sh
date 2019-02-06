@@ -17,8 +17,6 @@ reinstall=false
 lockfile_path="$DIR/korebuild-lock.txt"
 config_file="$DIR/korebuild.json"
 channel='master'
-target_arch='x64'
-target_os_name=''
 tools_source='https://aspnetcore.blob.core.windows.net/buildtools'
 target_os_name=''
 ci=false
@@ -41,12 +39,6 @@ else
 fi
 
 msbuild_args=()
-
-if [ "$(uname)" = "Darwin" ]; then
-    target_os_name='osx'
-else
-    target_os_name='linux'
-fi
 
 #
 # Functions

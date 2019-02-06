@@ -108,14 +108,6 @@
     <CreateDirectory Include="$(VisualStudioSetupOutputPath)" />
   </ItemGroup>
 
-  <!-- The location of the local installation of the .NET Core shared framework. -->
-  <PropertyGroup>
-    <LocalDotNetRoot Condition="'$(OS)' == 'Windows_NT'">$(RepositoryRoot).dotnet\$(TargetArchitecture)\</LocalDotNetRoot>
-    <LocalDotNetRoot Condition="'$(OS)' != 'Windows_NT'">$(RepositoryRoot).dotnet\</LocalDotNetRoot>
-    <!-- Override the SDK default and point to local .dotnet folder. -->
-    <NetCoreTargetingPackRoot>$(LocalDotNetRoot)packs\</NetCoreTargetingPackRoot>
-  </PropertyGroup>
-
   <PropertyGroup Condition=" '$(OutputInRepoRoot)' == 'true' ">
     <BaseOutputPath>$(RepositoryRoot)bin\$(MSBuildProjectName)\</BaseOutputPath>
     <OutputPath Condition=" '$(PlatformName)' == 'AnyCPU' ">$(BaseOutputPath)$(Configuration)\</OutputPath>
