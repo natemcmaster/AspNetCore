@@ -305,4 +305,5 @@ try {
 }
 finally {
     Remove-Module 'KoreBuild' -ErrorAction Ignore
+    Remove-Item env:DOTNET_HOME
 }

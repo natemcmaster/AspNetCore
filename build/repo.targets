@@ -2,8 +2,6 @@
   <Import Project="AzureIntegration.targets" />
   <Import Project="SharedFx.targets" />
   <Import Project="CodeSign.targets" />
-  <Import Project="Publish.targets" />
-  <Import Project="..\eng\Workarounds.targets" />
 
   <PropertyGroup>
     <!-- Some projects need access to tasks bundled in KoreBuild. -->
@@ -36,6 +34,11 @@
 
     <BuildDependsOn Condition="'$(CI)' == 'true'">$(BuildDependsOn);GenerateBuildAssetManifest</BuildDependsOn>
   </PropertyGroup>
+
+  <!-- Workaround https://github.com/dotnet/sdk/issues/2875 -->
+  <Target Name="CreateTargetingPackDirectory" BeforeTargets="RestoreProjects">
+    <MakeDir Directories="$(RepositoryRoot).dotnet\$(TargetArchitecture)\packs\Microsoft.AspNetCore.App.Ref\$(SharedFxVersion)\" />
+  </Target>
 
   <Target Name="ShowProjectClosure" DependsOnTargets="ResolveProjects">
     <MSBuild Targets="_CustomCollectProjectReference"
@@ -114,6 +117,17 @@
     </PropertyGroup>
 
     <WriteLinesToFile File="$(SharedFxDepList)" Lines="$(SharedFxDepListContent)" Overwrite="true" />
+  </Target>
+
+  <Target Name="GenerateBuildAssetManifest">
+    <!-- Generate build manifests. These manifests are used by Maestro and the Build Asset Registry to flow dependencies to other repos. -->
+    <MSBuild Projects="$(MSBuildThisFileDirectory)Maestro\Maestro.csproj"
+          Targets="Restore"
+          Properties="$(BuildProperties);__DummyTarget=Restore" />
+
+    <MSBuild Projects="$(MSBuildThisFileDirectory)Maestro\Maestro.csproj"
+             Targets="GenerateBuildAssetManifest"
+             Properties="$(BuildProperties);__DummyTarget=GenerateBuildAssetManifest" />
   </Target>
 
 </Project>
