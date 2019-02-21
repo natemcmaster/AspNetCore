@@ -15,13 +15,49 @@ namespace Microsoft.AspNetCore
     {
         private readonly string _expectedTfm;
         private readonly string _expectedRid;
+        private readonly string _sharedFxRoot;
+        private readonly string _targetingPackRoot;
         private readonly ITestOutputHelper _output;
 
         public SharedFxTests(ITestOutputHelper output)
         {
             _output = output;
-            _expectedTfm = "netcoreapp" + TestData.GetPackageVersion().Substring(0, 3);
+            _expectedTfm = "netcoreapp" + TestData.GetSharedFxVersion().Substring(0, 3);
             _expectedRid = TestData.GetSharedFxRuntimeIdentifier();
+            _sharedFxRoot = Path.Combine(TestData.GetSharedFrameworkLayoutRoot(), "shared", "Microsoft.AspNetCore.App", TestData.GetSharedFxVersion());
+            _targetingPackRoot = Path.Combine(TestData.GetSharedFrameworkLayoutRoot(), "packs", "Microsoft.AspNetCore.App.Ref", TestData.GetTargetingPackVersion());
+        }
+
+        [Fact]
+        public void SharedFrameworkContainsExpectedFiles()
+        {
+            var actualAssemblies = Directory.GetFiles(_sharedFxRoot, "*.dll").Select(Path.GetFileNameWithoutExtension).ToHashSet();
+            var expectedAssemblies = TestData.GetSharedFxDependencies()
+                .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                .ToHashSet();
+
+            _output.WriteLine("==== actual assemblies ====");
+            _output.WriteLine(string.Join('\n', actualAssemblies));
+            _output.WriteLine("==== expected assemblies ====");
+            _output.WriteLine(string.Join('\n', expectedAssemblies));
+
+            var missing = expectedAssemblies.Except(actualAssemblies);
+            var unexpected = actualAssemblies.Except(expectedAssemblies)
+                .Where(s => !string.Equals(s, "aspnetcorev2_inprocess", StringComparison.Ordinal));
+                // this native assembly only appears in Windows builds.
+
+            if (_expectedRid.StartsWith("win", StringComparison.Ordinal) && !_expectedRid.Contains("arm"))
+            {
+                Assert.Contains("aspnetcorev2_inprocess", actualAssemblies);
+            }
+
+            _output.WriteLine("==== missing assemblies from the framework ====");
+            _output.WriteLine(string.Join('\n', missing));
+            _output.WriteLine("==== unexpected assemblies in the framework ====");
+            _output.WriteLine(string.Join('\n', unexpected));
+
+            Assert.Empty(missing);
+            Assert.Empty(unexpected);
         }
 
         [Fact]
@@ -54,7 +90,7 @@ namespace Microsoft.AspNetCore
         [Fact]
         public void PlatformManifestListsAllFiles()
         {
-            var platformManifestPath = Path.Combine(TestData.GetManifestOutputDir(), "Microsoft.AspNetCore.App.PlatformManifest.txt");
+            var platformManifestPath = Path.Combine(_targetingPackRoot, "data", "PlatformManifest.txt");
             var expectedAssemblies = TestData.GetSharedFxDependencies()
                 .Split(';', StringSplitOptions.RemoveEmptyEntries)
                 .ToHashSet();
@@ -112,10 +148,10 @@ namespace Microsoft.AspNetCore
         [Fact]
         public void ItContainsValidRuntimeConfigFile()
         {
-            var runtimeConfigFilePath = Path.Combine(TestData.GetMetadataOutput(), "Microsoft.AspNetCore.App.runtimeconfig.json");
+            var runtimeConfigFilePath = Path.Combine(_sharedFxRoot, "Microsoft.AspNetCore.App.runtimeconfig.json");
 
             AssertEx.FileExists(runtimeConfigFilePath);
-            AssertEx.FileDoesNotExists(Path.Combine(TestData.GetMetadataOutput(), "Microsoft.AspNetCore.App.runtimeconfig.dev.json"));
+            AssertEx.FileDoesNotExists(Path.Combine(_sharedFxRoot, "Microsoft.AspNetCore.App.runtimeconfig.dev.json"));
 
             var runtimeConfig = JObject.Parse(File.ReadAllText(runtimeConfigFilePath));
 
@@ -128,9 +164,9 @@ namespace Microsoft.AspNetCore
         [Fact]
         public void ItContainsValidDepsJson()
         {
-            var depsFilePath = Path.Combine(TestData.GetMetadataOutput(), "Microsoft.AspNetCore.App.deps.json");
+            var depsFilePath = Path.Combine(_sharedFxRoot, "Microsoft.AspNetCore.App.deps.json");
 
-            var target = $".NETCoreApp,Version=v{TestData.GetPackageVersion().Substring(0, 3)}/{_expectedRid}";
+            var target = $".NETCoreApp,Version=v{TestData.GetSharedFxVersion().Substring(0, 3)}/{_expectedRid}";
             var ridPackageId = $"runtime.{_expectedRid}.Microsoft.AspNetCore.App";
 
             AssertEx.FileExists(depsFilePath);
@@ -149,17 +185,17 @@ namespace Microsoft.AspNetCore
                 Assert.Empty(lib["sha512"].Value<string>());
             });
 
-            Assert.NotNull(depsFile["libraries"][$"Microsoft.AspNetCore.App/{TestData.GetPackageVersion()}"]);
-            Assert.NotNull(depsFile["libraries"][$"runtime.{_expectedRid}.Microsoft.AspNetCore.App/{TestData.GetPackageVersion()}"]);
+            Assert.NotNull(depsFile["libraries"][$"Microsoft.AspNetCore.App/{TestData.GetSharedFxVersion()}"]);
+            Assert.NotNull(depsFile["libraries"][$"runtime.{_expectedRid}.Microsoft.AspNetCore.App/{TestData.GetSharedFxVersion()}"]);
             Assert.Equal(2, depsFile["libraries"].Values().Count());
 
             var targetLibraries = depsFile["targets"][target];
             Assert.Equal(2, targetLibraries.Values().Count());
-            var metapackage = targetLibraries[$"Microsoft.AspNetCore.App/{TestData.GetPackageVersion()}"];
+            var metapackage = targetLibraries[$"Microsoft.AspNetCore.App/{TestData.GetSharedFxVersion()}"];
             Assert.Null(metapackage["runtime"]);
             Assert.Null(metapackage["native"]);
 
-            var runtimeLibrary = targetLibraries[$"{ridPackageId}/{TestData.GetPackageVersion()}"];
+            var runtimeLibrary = targetLibraries[$"{ridPackageId}/{TestData.GetSharedFxVersion()}"];
             Assert.Null(runtimeLibrary["dependencies"]);
             Assert.All(runtimeLibrary["runtime"], item =>
             {
@@ -186,12 +222,12 @@ namespace Microsoft.AspNetCore
         [Fact]
         public void ItContainsVersionFile()
         {
-            var versionFile = Path.Combine(TestData.GetMetadataOutput(), ".version");
+            var versionFile = Path.Combine(_sharedFxRoot, ".version");
             AssertEx.FileExists(versionFile);
             var lines = File.ReadAllLines(versionFile);
             Assert.Equal(2, lines.Length);
             Assert.Equal(TestData.GetRepositoryCommit(), lines[0]);
-            Assert.Equal(TestData.GetPackageVersion(), lines[1]);
+            Assert.Equal(TestData.GetSharedFxVersion(), lines[1]);
         }
     }
 }

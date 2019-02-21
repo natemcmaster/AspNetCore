@@ -1,0 +1,10 @@
+
+<Project>
+  <PropertyGroup>
+    <OutputInRepoRoot>true</OutputInRepoRoot>
+    <!-- Temporary flag to disable restoring this project against the artifacts/ folder. -->
+    <_DisableRestoreFromLocalPackages>true</_DisableRestoreFromLocalPackages>
+  </PropertyGroup>
+
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory)..\, Directory.Build.props))\Directory.Build.props" />
+</Project>
