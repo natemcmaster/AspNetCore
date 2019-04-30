@@ -161,6 +161,7 @@ This package is an internal implementation of the .NET Core SDK and is not meant
       _DownloadAndExtractDotNetRuntime;
       _BatchCopyToSharedFrameworkLayout;
       _BatchCopyToRedistLayout;
+      _BatchCopyToLocalRuntimePackLayout;
       _CreateInternalSharedFxArchive;
       _CreateRedistSharedFxArchive;
       _InstallFrameworkIntoLocalDotNet;
@@ -291,6 +292,7 @@ This package is an internal implementation of the .NET Core SDK and is not meant
     <CreateDirectory Include="$(CrossgenToolDir)" />
     <CreateDirectory Include="$(SharedFxLayoutTargetDir)" />
     <CreateDirectory Include="$(RedistLayoutTargetDir)" />
+    <CreateDirectory Include="$(LocalRuntimePackPackageDirectory)" />
     <CreateDirectory Include="$(LocalInstallationOutputPath)" />
   </ItemGroup>
 
@@ -375,7 +377,11 @@ This package is an internal implementation of the .NET Core SDK and is not meant
       <SharedFxContent Include="$(VersionFileIntermediateOutputPath)" />
       <SharedFxContent Include="$(ProjectDepsFilePath)" />
       <SharedFxContent Include="$(ProjectRuntimeConfigFilePath)" />
-      <SharedFxContent Include="@(ReferenceCopyLocalPaths)" Condition="'%(Extension)' != '.pdb'" />
+      <_RuntimePackBinary Include="@(ReferenceCopyLocalPaths)" Condition="'%(Extension)' != '.pdb'">
+        <LocalRuntimePackDirectory Condition="'$(IsNativeImage)' != 'true'">$(LocalRuntimePackPackageDirectory)$(BuildOutputTargetFolder)$(TargetFramework)/</LocalRuntimePackDirectory>
+        <LocalRuntimePackDirectory Condition="'$(IsNativeImage)' == 'true'">$(LocalRuntimePackPackageDirectory)$(NativeAssetsPackagePath)</LocalRuntimePackDirectory>
+      </_RuntimePackBinary>
+      <SharedFxContent Include="@(_RuntimePackBinary)" />
     </ItemGroup>
   </Target>
 
@@ -412,6 +418,21 @@ This package is an internal implementation of the .NET Core SDK and is not meant
           DestinationFiles="@(SharedFxContent->'$(LocalInstallationOutputPath)%(FileName)%(Extension)')"
           UseHardlinksIfPossible="true" />
     <Message Importance="High" Text="$(MSbuildProjectFile) -> $(LocalInstallationOutputPath)" />
+  </Target>
+
+  <!--
+    Required to workaround https://github.com/dotnet/sdk/issues/2910. This constructs a local folder that looks like
+    an extracted runtime pack.
+  -->
+  <!-- Written to take advantage of target batching in MSBuild. -->
+  <Target Name="_BatchCopyToLocalRuntimePackLayout"
+          DependsOnTargets="_ResolveSharedFrameworkContent"
+          Inputs="@(_RuntimePackBinary)"
+          Outputs="@(_RuntimePackBinary->'%(LocalRuntimePackDirectory)%(FileName)%(Extension)')">
+
+    <Copy SourceFiles="@(_RuntimePackBinary)"
+          DestinationFiles="@(_RuntimePackBinary->'%(LocalRuntimePackDirectory)%(FileName)%(Extension)')"
+          UseHardlinksIfPossible="true" />
   </Target>
 
   <Target Name="_CreateInternalSharedFxArchive"

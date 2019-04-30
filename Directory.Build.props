@@ -194,6 +194,8 @@
     <TargetingPackLayoutRoot>$(ArtifactsObjDir)TargetingPack.Layout\$(Configuration)\</TargetingPackLayoutRoot>
     <!-- This property is shared by several projects to layout the AspNetCore.App shared framework for installers -->
     <SharedFrameworkLayoutRoot>$(ArtifactsObjDir)SharedFx.Layout\$(Configuration)\$(TargetRuntimeIdentifier)\</SharedFrameworkLayoutRoot>
+    <!-- This property is shared by several projects to layout the AspNetCore.App.Runtime.$(rid) runtime pack when building self-contained apps that use aspnetcore. -->
+    <LocalRuntimePackPackageDirectory>$(ArtifactsObjDir)SelfContained.Layout\$(Configuration)\</LocalRuntimePackPackageDirectory>
     <!-- This property points to a folder which includes both Microsoft.NETCore.App and AspNetCore.App. -->
     <RedistSharedFrameworkLayoutRoot>$(ArtifactsObjDir)RedistSharedFx.Layout\$(Configuration)\$(TargetRuntimeIdentifier)\</RedistSharedFrameworkLayoutRoot>
 

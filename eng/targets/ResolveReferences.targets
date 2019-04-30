@@ -52,7 +52,45 @@
 
     <ReferenceImplementationAssemblies Condition=" '$(ReferenceImplementationAssemblies)' == '' AND '$(IsReferenceAssemblyProject)' != 'true'">true</ReferenceImplementationAssemblies>
     <ReferenceImplementationAssemblies Condition=" '$(ReferenceImplementationAssemblies)' == '' ">false</ReferenceImplementationAssemblies>
+
+    <!--
+      True when a project might reference Microsoft.AspNetCore.App and it should be re-routed to the local version
+      being build. This check is in place to avoid unnecessary work in projects that definitely don't or can't
+      reference the shared framework.
+    -->
+    <_LocalAspNetCoreAppCandidate Condition="'$(IsAspNetCoreApp)' != 'true' AND '$(TargetFrameworkIdentifier)' == '.NETCoreApp' AND '$(_TargetFrameworkVersionWithoutV)' == '$(AspNetCoreMajorVersion).$(AspNetCoreMinorVersion)' ">true</_LocalAspNetCoreAppCandidate>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(_LocalAspNetCoreAppCandidate)' == 'true' AND '$(DisableProjectReferenceToSharedFramework)' != 'true' AND @(FrameworkReference->AnyHaveMetadataValue('Identity', 'Microsoft.AspNetCore.App'))">
+    <!-- When there is a FrameworkReference, also add a ProjectReference only for the sake of enforcing build order. -->
+    <ProjectReference Include="$(RepositoryRoot)src\Framework\ref\Microsoft.AspNetCore.App.Ref.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
+    <ProjectReference Include="$(RepositoryRoot)src\Framework\src\Microsoft.AspNetCore.App.Runtime.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
+
+    <!-- Add MSBuild projects to the inputs for runtimeconfig.json generation in the event the version is updated. -->
+    <GenerateRuntimeConfigurationFilesInputs Include="$(MSBuildAllProjects)" />
+
+    <KnownFrameworkReference Update="Microsoft.AspNetCore.App">
+      <LatestRuntimeFrameworkVersion>$(SharedFxVersion)</LatestRuntimeFrameworkVersion>
+      <!-- Always use the latest shared framework version when building this repo to ensure tests and console tools use the highest patched version. -->
+      <DefaultRuntimeFrameworkVersion>$(SharedFxVersion)</DefaultRuntimeFrameworkVersion>
+      <!-- Ensuring known framework reference metadata matches with the names for the packs produced by this repo. -->
+      <TargetingPackName>$(TargetingPackName)</TargetingPackName>
+      <!-- Use the latest pre-release targeting pack when preparing a new major.minor version. -->
+      <TargetingPackVersion Condition="'$(IsServicingBuild)' != 'true'">$(TargetingPackVersion)</TargetingPackVersion>
+      <!-- There is currently no plan to build patches of the targeting pack. -->
+      <TargetingPackVersion Condition="'$(IsServicingBuild)' == 'true'">$(AspNetCoreMajorVersion).$(AspNetCoreMinorVersion).0</TargetingPackVersion>
+      <!-- Preview4 versions of the SDK have this set by default, but earlier versions do not. -->
+      <RuntimePackNamePatterns>Microsoft.AspNetCore.App.Runtime.**RID**</RuntimePackNamePatterns>
+      <!-- The build only supports building standalone for the currently-building RID. -->
+      <RuntimePackRuntimeIdentifiers>$(TargetRuntimeIdentifier)</RuntimePackRuntimeIdentifiers>
+    </KnownFrameworkReference>
+  </ItemGroup>
 
   <ItemDefinitionGroup>
     <Reference>
@@ -84,6 +122,15 @@
         @(ExternalAspNetCoreAppReference);
         @(_CompilationOnlyReference);
         @(Reference->WithMetadataValue('IsSharedSource', 'true'))" />
+    <!-- TODO: remove Newtonsoft.Json from this list once https://github.com/aspnet/AspNetCore/issues/4260 is resolved -->
+
+    <_NotAspNetCoreApp Condition="'$(IsAspNetCoreApp)' != 'true'"
+      Include="@(Reference)"
+      Exclude="@(AspNetCoreAppReference)" />
+    <_InvalidReferenceToSharedFxOnlyAssembly Condition="'$(IsAspNetCoreApp)' != 'true'"
+      Include="@(Reference)"
+      Exclude="@(_NotAspNetCoreApp);@(AspNetCoreAppReferenceAndPackage);@(ExternalAspNetCoreAppReference)" />
+
     <_OriginalReferences Include="@(Reference)" />
     <!--
       Turn Reference items into a ProjectReference when UseProjectReferences is true.
@@ -118,15 +165,42 @@
   <Target Name="_CheckForReferenceBoundaries" BeforeTargets="CollectPackageReferences;ResolveReferences">
 
     <Error Condition="@(_InvalidReferenceToSharedFxOnlyAssembly->Count()) != 0"
+           Code="BUILD003"
            Text="Cannot reference &quot;%(_InvalidReferenceToSharedFxOnlyAssembly.Identity)&quot; directly because it is part of the shared framework and this project is not. Use &lt;FrameworkReference Include=&quot;Microsoft.AspNetCore.App&quot; /&gt; instead." />
 
     <Error Condition="@(_InvalidReferenceToNonSharedFxAssembly->Count()) != 0"
+           Code="BUILD004"
            Text="Cannot reference &quot;%(_InvalidReferenceToNonSharedFxAssembly.Identity)&quot;. This dependency is not in the shared framework. See docs/SharedFramework.md for instructions on how to modify what is in the shared framework." />
   </Target>
 
   <Target Name="_WarnAboutRedundantRef" AfterTargets="ResolveFrameworkReferences">
     <Warning Condition="@(FrameworkReference->WithMetadataValue('Identity', 'Microsoft.AspNetCore.App')->Count()) &gt; 1"
              Text="Redundant &lt;FrameworkReference&gt;. If you have an explicit item in the project file, you might be able to remove it. Some SDKs, like Microsoft.NET.Sdk.Web, add this implicitly." />
+  </Target>
+
+  <!--
+    Required to workaround https://github.com/dotnet/sdk/issues/2910.
+    This redirects the SDK to use build output folders which have been created to imitate an
+    extracted package.
+  -->
+  <Target Name="ResolvePacksToLocalBuildOutput"
+          DependsOnTargets="ResolveFrameworkReferences"
+          BeforeTargets="ResolveTargetingPacks;ResolveRuntimePackAssets;CollectPackageReferences"
+          Condition="'$(_LocalAspNetCoreAppCandidate)' == 'true'">
+
+    <ItemGroup>
+      <TargetingPack Condition="'%(Identity)' == 'Microsoft.AspNetCore.App'">
+        <!-- Redirect the SDK to use a local folder for the targeting pack. -->
+        <PackageDirectory>$(TargetingPackLayoutRoot)packs\$(TargetingPackName)\$(TargetingPackVersion)\</PackageDirectory>
+      </TargetingPack>
+      <!-- Prevent SDK from attempting to restore a runtime and targeting pack as packages (they don't exist yet.) -->
+      <PackageReference Remove="Microsoft.AspNetCore.App.Ref" />
+      <PackageReference Remove="Microsoft.AspNetCore.App.Runtime.$(TargetRuntimeIdentifier)" />
+      <RuntimePack Condition="'%(Identity)' == 'Microsoft.AspNetCore.App.Runtime.$(TargetRuntimeIdentifier)'">
+        <!-- Redirect the SDK to use a local folder for the targeting pack. -->
+        <PackageDirectory>$(LocalRuntimePackPackageDirectory)</PackageDirectory>
+      </RuntimePack>
+    </ItemGroup>
   </Target>
 
   <!--

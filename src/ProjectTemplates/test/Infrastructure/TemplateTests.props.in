@@ -19,8 +19,8 @@
       LatestRuntimeFrameworkVersion="${MicrosoftAspNetCoreAppPackageVersion}"
       TargetingPackName="Microsoft.AspNetCore.App.Ref"
       TargetingPackVersion="${MicrosoftAspNetCoreAppPackageVersion}"
-      RuntimePackNamePatterns="Microsoft.NETCore.App.Runtime.**RID**"
-      RuntimePackRuntimeIdentifiers="${SupportedRuntimeIdentifiers}" />
+      RuntimePackNamePatterns="Microsoft.AspNetCore.App.Runtime.**RID**"
+      RuntimePackRuntimeIdentifiers="${TargetRuntimeIdentifier}" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UsingMicrosoftNETSdkWeb)' == 'true' OR '$(RazorSdkCurrentVersionProps)' != ''">

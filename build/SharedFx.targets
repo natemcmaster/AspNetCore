@@ -1,13 +1,10 @@
 <Project>
   <PropertyGroup>
-    <BuildSharedFxDependsOn>_BuildSharedFxProjects;RemoveSharedFrameworkOnlyRefsFromNuspec</BuildSharedFxDependsOn>
+    <BuildSharedFxDependsOn>_BuildSharedFxProjects</BuildSharedFxDependsOn>
     <BuildSharedFxDependsOn Condition="'$(TestOnly)' != 'true'">$(BuildSharedFxDependsOn);CodeSign</BuildSharedFxDependsOn>
   </PropertyGroup>
 
   <ItemGroup>
-    <FxProjectToBuild Condition=" '$(TargetRuntimeIdentifier)' == 'linux-x64' AND '$(LinuxInstallerType)' == 'deb' " Include="$(RepositoryRoot)src\Installers\Debian\**\*.*proj" />
-    <FxProjectToBuild Condition=" '$(TargetRuntimeIdentifier)' == 'linux-x64' AND '$(LinuxInstallerType)' == 'rpm' " Include="$(RepositoryRoot)src\Installers\Rpm\**\*.*proj" />
-
     <FxProjectToBuild Condition=" '$(BuildSiteExtensions)' == 'true' " Include="$(RepositoryRoot)src\SiteExtensions\Runtime\Microsoft.AspNetCore.Runtime.SiteExtension.pkgproj" />
     <FxProjectToBuild Condition=" '$(BuildSiteExtensions)' == 'true' " Include="$(RepositoryRoot)src\SiteExtensions\LoggingBranch\LoggingBranch.csproj" />
 
