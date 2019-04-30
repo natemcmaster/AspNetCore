@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Hosting" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" P2P="true" />
     <Reference Include="Microsoft.AspNetCore.Hosting.WindowsServices" />
   </ItemGroup>
 

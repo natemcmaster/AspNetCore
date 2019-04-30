@@ -14,6 +14,7 @@
     <SelfContained>false</SelfContained>
     <PackageId>$(MSBuildProjectName).$(RuntimeIdentifier)</PackageId>
     <PackageVersion>$(SharedFxVersion)</PackageVersion>
+    <IsAspNetCoreApp>true</IsAspNetCoreApp>
     <IsShippingPackage>true</IsShippingPackage>
     <HasReferenceAssembly>false</HasReferenceAssembly>
     <PackageDescription>Provides a default set of APIs for building an ASP.NET Core application. Contains assets used for self-contained deployments.
@@ -112,9 +113,8 @@ This package is an internal implementation of the .NET Core SDK and is not meant
     <CrossgenToolPackagePath Condition=" '$(TargetRuntimeIdentifier)' == 'linux-arm64' ">x64_arm64\$(CrossgenToolPackagePath)</CrossgenToolPackagePath>
     <CrossgenToolPackagePath Condition=" '$(TargetRuntimeIdentifier)' == 'win-arm' ">x86_arm\$(CrossgenToolPackagePath)</CrossgenToolPackagePath>
 
-    <RuntimePackageRoot>$([System.IO.Path]::Combine('$(NuGetPackageRoot)', 'runtime.$(RuntimeIdentifier).microsoft.netcore.app', '$(MicrosoftNETCoreAppPackageVersion)'))</RuntimePackageRoot>
-    <RuntimePackageRoot>$([MSBuild]::EnsureTrailingSlash('$(RuntimePackageRoot)'))</RuntimePackageRoot>
-    <CrossgenToolPath>$([System.IO.Path]::Combine('$(RuntimePackageRoot)', 'tools', '$(CrossgenToolPackagePath)'))</CrossgenToolPath>
+    <RuntimePackageRoot>$(NuGetPackageRoot)/runtime.$(RuntimeIdentifier).microsoft.netcore.app/$(MicrosoftNETCoreAppPackageVersion)/</RuntimePackageRoot>
+    <CrossgenToolPath>$(RuntimePackageRoot)tools/$(CrossgenToolPackagePath)</CrossgenToolPath>
     <AssetTargetFallback>$(AssetTargetFallback);native,Version=0.0</AssetTargetFallback>
   </PropertyGroup>
 
@@ -124,7 +124,12 @@ This package is an internal implementation of the .NET Core SDK and is not meant
       <IncludeAssets>Runtime;Native</IncludeAssets>
     </Reference>
 
-    <Reference Include="runtime.$(RuntimeIdentifier).microsoft.netcore.app" ExcludeAssets="All" PrivateAssets="All" />
+    <!-- This package contains the crossgen tool we need to optimize the shared framework. -->
+    <PackageReference Include="runtime.$(RuntimeIdentifier).microsoft.netcore.app" Version="$(MicrosoftNETCoreAppPackageVersion)">
+      <PrivateAssets>All</PrivateAssets>
+      <ExcludeAssets>All</ExcludeAssets>
+      <AllowExplicitReference>true</AllowExplicitReference>
+    </PackageReference>
 
     <ProjectReference Condition="'$(BuildIisNativeProjects)' == 'true' AND '$(BuildNative)' != 'false' AND '$(VCTargetsPath)' != ''" Include="$(RepositoryRoot)src\Servers\IIS\AspNetCoreModuleV2\InProcessRequestHandler\InProcessRequestHandler.vcxproj">
       <SetPlatform>Platform=$(TargetArchitecture)</SetPlatform>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Authentication.Cookies" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" P2P="true" />
     <Reference Include="Microsoft.AspNetCore.Authentication.Facebook" />
     <Reference Include="Microsoft.AspNetCore.Authentication.Google" />
     <Reference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
