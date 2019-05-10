@@ -115,9 +115,7 @@ namespace Microsoft.AspNetCore.DataProtection
         }
 
         [ConditionalFact]
-        [Flaky("https://github.com/aspnet/AspNetCore-Internal/issues/2177", FlakyOn.AzP.Windows)]
         [X509StoreIsAvailable(StoreName.My, StoreLocation.CurrentUser)]
-        [SkipOnHelix] // https://github.com/aspnet/AspNetCore/issues/6720
         public void System_UsesProvidedDirectoryAndCertificate()
         {
             var filePath = Path.Combine(GetTestFilesPath(), "TestCert.pfx");
@@ -132,7 +130,9 @@ namespace Microsoft.AspNetCore.DataProtection
             {
                 var certificateStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
                 certificateStore.Open(OpenFlags.ReadWrite);
-                var certificate = certificateStore.Certificates.Find(X509FindType.FindBySubjectName, "TestCert", false)[0];
+                var certificatesInStore = certificateStore.Certificates.Find(X509FindType.FindByThumbprint, "EF068A16FE536A50907E7634E86F0E2805F0D232", false);
+                var certificate = Assert.IsType<X509Certificate2>(Assert.Single(certificatesInStore));
+                Assert.True(certificate.HasPrivateKey, "Cert added to store should have a private key");
 
                 try
                 {
@@ -145,7 +145,8 @@ namespace Microsoft.AspNetCore.DataProtection
                     var data = protector.Protect("payload");
 
                     // add a cert without the private key to ensure the decryption will still fallback to the cert store
-                    var certWithoutKey = new X509Certificate2(Path.Combine(GetTestFilesPath(), "TestCertWithoutPrivateKey.pfx"), "password");
+                    var certWithoutKey = new X509Certificate2(Path.Combine(GetTestFilesPath(), "TestCertWithoutPrivateKey.pfx"), "password", X509KeyStorageFlags.Exportable);
+                    Assert.False(certWithoutKey.HasPrivateKey, "Cert read from file should not have private key");
                     var unprotector = DataProtectionProvider.Create(directory, o => o.UnprotectKeysWithAnyCertificate(certWithoutKey)).CreateProtector("purpose");
                     Assert.Equal("payload", unprotector.Unprotect(data));
 
@@ -184,7 +185,8 @@ namespace Microsoft.AspNetCore.DataProtection
                 using (var certificateStore = new X509Store(StoreName.My, StoreLocation.CurrentUser))
                 {
                     certificateStore.Open(OpenFlags.ReadWrite);
-                    var certInStore = certificateStore.Certificates.Find(X509FindType.FindBySubjectName, "TestCert", false)[0];
+                    var certificatesInStore = certificateStore.Certificates.Find(X509FindType.FindByThumbprint, "6A46E3E5FA9D3F4D81C1E8333D4F3E63769EECCF", false);
+                    var certInStore = Assert.IsType<X509Certificate2>(Assert.Single(certificatesInStore));
                     Assert.NotNull(certInStore);
                     Assert.False(certInStore.HasPrivateKey);
 
