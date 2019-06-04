@@ -10,6 +10,16 @@
     <IntDir>$(IntermediateOutputPath)</IntDir>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReferenceTargets Include="Build">
+      <Targets>
+        Build;
+        GetNativeManifest;
+        GetResolvedLinkLibs;
+      </Targets>
+    </ProjectReferenceTargets>
+  </ItemGroup>
+
   <Import Project="MicroBuild.Plugin.props" Condition="'$(MicroBuildSentinelFile)' == ''" />
   <Import Project="$(MicroBuildPluginDirectory)\MicroBuild.Plugins.*\**\build\MicroBuild.Plugins.*.props" Condition=" '$(MicroBuildPluginDirectory)' != ''" />
 

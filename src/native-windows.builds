@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.Build.Traversal/2.0.2">
   <ItemGroup>
-    <ProjectReference Include="Servers\**\*.vcxproj" />
+    <ProjectReference Include="Servers\**\*.vcxproj" Exclude="submodules\**\*.vcxproj" />
   </ItemGroup>
 </Project>
